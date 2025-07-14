@@ -1,0 +1,17 @@
+// 移除 syntax="proto3"，proto2 默认可省略 
+message MsgHead{
+	optional int32 flag = 1 [default = 0];
+	optional int32 size = 2 [default = 0];  
+	optional int32 msgtype = 3 [default = 0];  
+}
+
+message MqHead {
+  optional int32 commond = 1 [default = 0];       // 显式声明 optional 并设置默认值 
+  optional int32 toid = 2 [default = 0];   // 字符串默认空值 
+}
+
+
+message RmiHead {
+  optional int32 msgid = 1 [default = 0];       // 显式声明 optional 并设置默认值 
+  optional string identity = 2 [default = ""];   // 字符串默认空值 
+}

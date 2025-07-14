@@ -1,0 +1,17 @@
+// 移除 syntax="proto3"，proto2 默认可省略 
+message Role {
+  optional int32 id = 1 [default = 0];       // 显式声明 optional 并设置默认值 
+  optional string name = 2 [default = ""];   // 字符串默认空值 
+  optional int32 money = 3 [default = 0];    // 数值类型默认 0 
+  repeated int32 tasks = 4;                  // repeated 规则保留 
+}
+ 
+message Family {
+  optional string name = 1 [default = ""];
+  optional int32 lv = 2 [default = 0];
+  repeated Role roles = 3;                   // 嵌套消息无需调整规则
+}
+ 
+message ChatMsg {                            // 消息名首字母大写
+  optional string msg = 1 [default = ""];     // 类型支持默认值 
+}

@@ -1,0 +1,231 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="源文件\logger">
+      <UniqueIdentifier>{d327b63e-7029-464e-8735-7faf35a39eee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\database">
+      <UniqueIdentifier>{c57b1e3d-f5bd-4e0a-a8a4-b054d3516a6b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\core">
+      <UniqueIdentifier>{58a7b322-3634-47da-acca-ee9074bfd2f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\utils">
+      <UniqueIdentifier>{5c7d16ac-95f1-44db-bf40-e3ee69a36705}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\protobuf">
+      <UniqueIdentifier>{c743e2a9-34b6-4a76-96d3-4d2b755f2aff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\sharemem">
+      <UniqueIdentifier>{eba2f90a-e849-4420-96e7-6f5e4f6bf7de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\tolua">
+      <UniqueIdentifier>{5af709a9-f20e-4a59-b37a-017dabe29557}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\tolua\bridge">
+      <UniqueIdentifier>{4e24393a-da64-41ec-ac38-11195d62a513}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\objectpool">
+      <UniqueIdentifier>{ae968f14-cc78-4a62-ac9e-7f5a269ee086}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\public.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\config.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\logger\elog_cfg.h">
+      <Filter>源文件\logger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\logger\elog_file.h">
+      <Filter>源文件\logger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\logger\elog_file_cfg.h">
+      <Filter>源文件\logger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\logger\elog.h">
+      <Filter>源文件\logger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\utils\cjson.h">
+      <Filter>源文件\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\utils\datetime.h">
+      <Filter>源文件\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\utils\lightlock.h">
+      <Filter>源文件\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\utils\rbtree.h">
+      <Filter>源文件\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\server.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\core\inputstream.h">
+      <Filter>源文件\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\core\mempool.h">
+      <Filter>源文件\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\core\netmsgblock.h">
+      <Filter>源文件\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\core\netmsgqueue.h">
+      <Filter>源文件\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\core\timer.h">
+      <Filter>源文件\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\protobuf\pb.h">
+      <Filter>源文件\protobuf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\sharemem\sharemem.h">
+      <Filter>源文件\sharemem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\database\mysqlconn.h">
+      <Filter>源文件\database</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\core\bytestream.h">
+      <Filter>源文件\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\core\network.h">
+      <Filter>源文件\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\core\netsocket.h">
+      <Filter>源文件\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\core\protocol.h">
+      <Filter>源文件\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\tolua\bridge\luacallbridge.h">
+      <Filter>源文件\tolua\bridge</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\utils\endian.h">
+      <Filter>源文件\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\objectpool\objectpool.h">
+      <Filter>源文件\objectpool</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\main.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\logger\elog_buf.c">
+      <Filter>源文件\logger</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\logger\elog_file.c">
+      <Filter>源文件\logger</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\logger\elog_file_port.c">
+      <Filter>源文件\logger</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\logger\elog_port.c">
+      <Filter>源文件\logger</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\logger\elog_utils.c">
+      <Filter>源文件\logger</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\logger\elog.c">
+      <Filter>源文件\logger</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\logger\elog_async.c">
+      <Filter>源文件\logger</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\utils\datetime.c">
+      <Filter>源文件\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\utils\lightlock.c">
+      <Filter>源文件\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\utils\rbtree.c">
+      <Filter>源文件\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\utils\cjson.c">
+      <Filter>源文件\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\server.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\core\inputstream.c">
+      <Filter>源文件\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\core\mempool.c">
+      <Filter>源文件\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\core\netmsgblock.c">
+      <Filter>源文件\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\core\netmsgqueue.c">
+      <Filter>源文件\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\core\timer.c">
+      <Filter>源文件\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\protobuf\pb.c">
+      <Filter>源文件\protobuf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\sharemem\sharemem.c">
+      <Filter>源文件\sharemem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\database\mysqlconn.c">
+      <Filter>源文件\database</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\tolua\bytestreamtolua.c">
+      <Filter>源文件\tolua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\core\bytestream.c">
+      <Filter>源文件\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\tolua\logtolua.c">
+      <Filter>源文件\tolua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\tolua\servertolua.c">
+      <Filter>源文件\tolua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\tolua\mysqltolua.c">
+      <Filter>源文件\tolua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\tolua\jsontolua.c">
+      <Filter>源文件\tolua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\tolua\networktolua.c">
+      <Filter>源文件\tolua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\core\network.c">
+      <Filter>源文件\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\core\netsocket.c">
+      <Filter>源文件\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\tolua\bridge\luacallbridge.c">
+      <Filter>源文件\tolua\bridge</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\tolua\timertolua.c">
+      <Filter>源文件\tolua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\utils\endian.c">
+      <Filter>源文件\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\objectpool\objectpool.c">
+      <Filter>源文件\objectpool</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\tolua\objectpooltolua.c">
+      <Filter>源文件\tolua</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

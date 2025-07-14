@@ -1,0 +1,218 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\config.h" />
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\core\bytestream.h" />
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\core\inputstream.h" />
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\core\mempool.h" />
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\core\netmsgblock.h" />
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\core\netmsgqueue.h" />
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\core\netsocket.h" />
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\core\network.h" />
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\core\protocol.h" />
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\core\timer.h" />
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\database\mysqlconn.h" />
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\logger\elog.h" />
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\logger\elog_cfg.h" />
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\logger\elog_file.h" />
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\logger\elog_file_cfg.h" />
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\objectpool\objectpool.h" />
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\protobuf\pb.h" />
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\public.h" />
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\server.h" />
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\sharemem\sharemem.h" />
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\tolua\bridge\luacallbridge.h" />
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\utils\cjson.h" />
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\utils\datetime.h" />
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\utils\endian.h" />
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\utils\lightlock.h" />
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\utils\rbtree.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\core\bytestream.c" />
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\core\inputstream.c" />
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\core\mempool.c" />
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\core\netmsgblock.c" />
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\core\netmsgqueue.c" />
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\core\netsocket.c" />
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\core\network.c" />
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\core\timer.c" />
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\database\mysqlconn.c" />
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\logger\elog.c" />
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\logger\elog_async.c" />
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\logger\elog_buf.c" />
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\logger\elog_file.c" />
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\logger\elog_file_port.c" />
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\logger\elog_port.c" />
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\logger\elog_utils.c" />
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\main.c" />
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\objectpool\objectpool.c" />
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\protobuf\pb.c" />
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\server.c" />
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\sharemem\sharemem.c" />
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\tolua\bridge\luacallbridge.c" />
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\tolua\bytestreamtolua.c" />
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\tolua\jsontolua.c" />
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\tolua\logtolua.c" />
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\tolua\mysqltolua.c" />
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\tolua\networktolua.c" />
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\tolua\objectpooltolua.c" />
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\tolua\servertolua.c" />
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\tolua\timertolua.c" />
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\utils\cjson.c" />
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\utils\datetime.c" />
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\utils\endian.c" />
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\utils\lightlock.c" />
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\utils\rbtree.c" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{5744DBDA-1C3F-46C2-8962-3A86B2BDF197}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>DsLuaGame</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)runnable\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)..\bin\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;_WINSOCK_DEPRECATED_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../../DsLuaGame/LuaLib;../../DsLuaGame/PosixLib;../../DsLuaGame/DsLuaGame;$(MYSQL_PATH)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>LuaLib.lib;PosixLib.lib;libmysql.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../DsLuaGameProject/runnable;$(MYSQL_PATH)/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;_WINSOCK_DEPRECATED_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../../DsLuaGame/LuaLib;../../DsLuaGame/DsLuaGame;../../DsLuaGame/LuaSocketLib;$(MYSQL_PATH)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>LuaLib.lib;libmysql.lib;ws2_32.lib;LuaSocketLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)../bin;$(MYSQL_PATH)/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

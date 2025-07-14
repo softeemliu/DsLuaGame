@@ -1,0 +1,23 @@
+// 移除 syntax="proto3"，proto2 默认可省略 
+// 1. 整数类型分组 (使用变长编码)
+message CIntegers {
+  optional int32  int32_v   = 1;  // int
+  optional int64  int64_v   = 2;  // long/long long
+  optional uint32 uint32_v  = 3;  // unsigned int
+  optional uint64 uint64_v  = 4;  // unsigned long
+  
+  // 小整数紧凑存储 (使用 sint 优化负数)
+  optional sint32 int16_v   = 5;  // short
+  optional uint32 uint16_v  = 6;  // unsigned short
+  
+  // 8位类型合并存储 (0-255)
+  optional uint32 char_byte = 7 [ // 低16位: [0-7]char, [8-15]byte
+    default = 0
+  ];
+}
+
+// 2. 浮点类型分组 (固定大小)
+message CFloats {
+  optional float  float32 = 1;  // float
+  optional double float64 = 2;  // double
+}
