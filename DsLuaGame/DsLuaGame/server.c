@@ -20,19 +20,14 @@ void init_server(const char* path)
 	elog_set_text_color_enabled(true);
 #endif
 	elog_start();
+	//初始化时间
+	init_datetime();
 	//初始化网络
 	init_network(0);
 	//初始化定时器
-	timer_init(1024);
+	timer_init();
 	//初始化bytestream
 	init_bytestream_pool(32);
-
-#ifdef _WIN32
-	CreateThread(NULL, 0, datetime_thread_run, NULL, 0, NULL);
-#else
-	pthread_t datetime_thread;
-	pthread_create(&datetime_thread, NULL, datetime_thread_run, NULL);
-#endif
 }
 
 static void signal_handler(int sig)

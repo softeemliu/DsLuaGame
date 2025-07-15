@@ -43,6 +43,7 @@
     <ClInclude Include="..\..\DsLuaGame\DsLuaGame\utils\cjson.h" />
     <ClInclude Include="..\..\DsLuaGame\DsLuaGame\utils\datetime.h" />
     <ClInclude Include="..\..\DsLuaGame\DsLuaGame\utils\endian.h" />
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\utils\lightevent.h" />
     <ClInclude Include="..\..\DsLuaGame\DsLuaGame\utils\lightlock.h" />
     <ClInclude Include="..\..\DsLuaGame\DsLuaGame\utils\rbtree.h" />
   </ItemGroup>
@@ -80,6 +81,7 @@
     <ClCompile Include="..\..\DsLuaGame\DsLuaGame\utils\cjson.c" />
     <ClCompile Include="..\..\DsLuaGame\DsLuaGame\utils\datetime.c" />
     <ClCompile Include="..\..\DsLuaGame\DsLuaGame\utils\endian.c" />
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\utils\lightevent.c" />
     <ClCompile Include="..\..\DsLuaGame\DsLuaGame\utils\lightlock.c" />
     <ClCompile Include="..\..\DsLuaGame\DsLuaGame\utils\rbtree.c" />
   </ItemGroup>

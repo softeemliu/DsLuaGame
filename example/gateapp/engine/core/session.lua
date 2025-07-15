@@ -1,30 +1,48 @@
 --[[
-文件名：clientsession.lua
+文件名：ClientSession.lua
 日期：2025.02.24
 author: kenny
 function:保存客户端网络连接的基本信息,进行网络通讯使用
 ]]
 local base = require("common.app")
 
-local clientsession = {}
-clientsession.__index = clientsession
-clientsession._fd = 0
+local ClientSession = {}
+ClientSession.__index = ClientSession
+ClientSession._fd = 0
+ClientSession._ip = ""
+ClientSession._isClient = false
 
-function clientsession:new()
-	local obj = setmetatable(base:new(),clientsession)
+function ClientSession:new()
+	local obj = setmetatable(base:new(),ClientSession)
 	return obj
 end
 
-function clientsession:init(fd)
+function ClientSession:init(fd)
 	self._fd = fd
 end
 
-function clientsession:getfd()
+function ClientSession:getfd()
 	return self._fd
 end
 
-function clientsession:fina()
+function ClientSession:setIpStr( ipstr )
+	self._ip = ipstr
+end
+
+function ClientSession:getIpStr()
+	return self._ip
+end
+
+function ClientSession:setClient( iscli )
+	self._isClient = iscli
+end
+
+function ClientSession:isClient()
+	return self._isClient
+end
+
+function ClientSession:fina()
 	
 end
 
-return clientsession
+return ClientSession

@@ -33,8 +33,11 @@ end
 
 function Network:onClientAccept(sock, ip)
 	local clis = session:new()
-	clis:init(sock);
+	clis:init(sock)
+	clis:setIpStr(ip)
+	clis:setClient(true)
 	sessionmgr:addSession(sock, clis)
+	--添加一个定时器检测是否有数据包
 	elog.log_i("onClientAccept,remote ip:" .. ip .. " session id:" .. sock )
 end
 
@@ -66,7 +69,7 @@ function Network:onNetworkError(sock, err)
 	local clis = sessionmgr:getSession(sock)
 	if clis ~= nil then
 		--清理资源
-		elog.log_i("network:onnetworkerror, clientIp:" .. " " .. err)
+		elog.log_i("network:onnetworkerror, clientIp:" .. clis:getIpStr() .. " " .. err)
 		clis = nil
 	end
 end

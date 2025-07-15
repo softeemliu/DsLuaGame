@@ -1,222 +1,133 @@
 #include "timer.h"
-#include "public.h"
-#include <memory.h>
 #include "logger/elog.h"
+#include "mempool.h"
+#include "utils/datetime.h"
 
 // 静态定时器管理器
-static TimerManager* mgr = NULL;
+// 全局实例
+timermanager* timermgr = NULL;
 
-// 获取当前时间（微秒）
-uint64_t get_current_time() {
-#ifdef _WIN32 
-	FILETIME ft;
-	GetSystemTimeAsFileTime(&ft);
-	return ((uint64_t)ft.dwHighDateTime << 32) | ft.dwLowDateTime;
-#else 
-	struct timeval tv;
-	gettimeofday(&tv, NULL);
-	return (uint64_t)tv.tv_sec * 1000000 + tv.tv_usec;
-#endif 
+// 时间比较 (a < b)
+bool datetime_less(datetime a, datetime b) {
+	return a._timeSpan < b._timeSpan;
 }
 
-// 堆操作函数
-void heap_swap(Timer** heap, int i, int j) {
-	Timer* tmp = heap[i];
-	heap[i] = heap[j];
-	heap[j] = tmp;
+
+// 创建定时任务
+timertask* timer_task_create(timer_callback func, void* arg) {
+	timertask* task = (timertask*)mempool_allocate(mempool_getinstance(), sizeof(timertask));
+	task->func = func;
+	task->arg = arg;
+	return task;
 }
 
-void heapify_up(TimerManager* mgr, int index) {
-	while (index > 0) {
-		int parent = (index - 1) / 2;
-		if (mgr->heap[index]->trigger_time < mgr->heap[parent]->trigger_time) {
-			heap_swap(mgr->heap, index, parent);
-			index = parent;
+// 销毁定时任务
+void timer_task_destroy(timertask* task) {
+	mempool_deallocate(mempool_getinstance(), task, sizeof(timertask));
+}
+
+void timer_init()
+{
+	if (timermgr == NULL) 
+	{
+		timermgr = (timermanager*)mempool_allocate(mempool_getinstance(), sizeof(timermanager));
+		AUTO_LOCK_INIT(&timermgr->lock);
+		timermgr->event = *lightevent_create("tter");
+		if (&timermgr->event == NULL) {
+			log_e("Failed to create sync objects\n");
+			return;
 		}
-		else {
-			break;
-		}
-	}
-}
-
-void heapify_down(TimerManager* mgr, int index) {
-	int smallest = index;
-	int left = 2 * index + 1;
-	int right = 2 * index + 2;
-
-	if (left < (int)mgr->count &&
-		mgr->heap[left]->trigger_time < mgr->heap[smallest]->trigger_time) {
-		smallest = left;
-	}
-
-	if (right < mgr->count &&
-		mgr->heap[right]->trigger_time < mgr->heap[smallest]->trigger_time) {
-		smallest = right;
-	}
-
-	if (smallest != index) {
-		heap_swap(mgr->heap, index, smallest);
-		heapify_down(mgr, smallest);
-	}
-}
-
-// 初始化定时器管理器 
-void timer_init(uint32_t initial_capacity) {
-	mgr = (TimerManager*)malloc(sizeof(TimerManager));
-	mgr->heap = (Timer**)malloc(initial_capacity * sizeof(Timer*));
-	if (mgr->heap == NULL) {
-		log_e("Memory allocation failed for timers\n");
-		return;
-	}
-	mgr->capacity = initial_capacity;
-	mgr->count = 0;
-	mgr->next_id = 1;
-
-#ifdef _WIN32 
-	mgr->mutex = CreateMutex(NULL, FALSE, NULL);
-	mgr->event = CreateEvent(NULL, FALSE, FALSE, NULL);
-	if (mgr->mutex == NULL || mgr->event == NULL) {
-		log_e("Failed to create sync objects\n");
-		free(mgr->heap);
-		return;
-	}
-
-	mgr->thread_handle = CreateThread(NULL, 0, timer_thread_run, mgr, 0, NULL);
-
-#else 
-	if (pthread_mutex_init(&mgr->mutex, NULL) != 0 ||
-		pthread_cond_init(&mgr->cond, NULL) != 0) {
-		log_e("Failed to initialize sync objects\n");
-		free(mgr->heap);
-		return;
-	}
-
-	pthread_create(&mgr->thread_handle, NULL, timer_thread_run, mgr);
-#endif 
-}
-
-// 动态扩容堆
-void resize_heap(TimerManager* mgr) {
-	int new_capacity = mgr->capacity * 2;
-	Timer** new_heap = (Timer**)realloc(mgr->heap, new_capacity * sizeof(Timer*));
-	if (new_heap == NULL) {
-		log_i("Heap resize failed\n");
-		return;
-	}
-	mgr->heap = new_heap;
-	mgr->capacity = new_capacity;
-}
-
-// 添加定时器（返回定时器ID）
-uint32_t timer_add(uint32_t interval, bool repeat, TimerCallback cb, void* data, UserDataFreeFunc free_func) {
-	Timer* new_timer = (Timer*)malloc(sizeof(Timer));
-	if (!new_timer) {
-		log_i("Failed to allocate timer\n");
-		return 0;
-	}
-
-	new_timer->id = mgr->next_id++;
-	new_timer->interval = interval;
-	new_timer->is_repeat = repeat;
-	new_timer->callback = cb;
-	new_timer->user_data = data;
-	new_timer->is_active = true;
-	new_timer->trigger_time = get_current_time() + interval * 1000; // 转换为微秒
-	new_timer->free_func = free_func; // 设置释放函数
-
-#ifdef _WIN32 
-	WaitForSingleObject(mgr->mutex, INFINITE);
-#else 
-	pthread_mutex_lock(&mgr->mutex);
-#endif 
-	// 动态扩容
-	if (mgr->count >= mgr->capacity) {
-		resize_heap(mgr);
-	}
-	// 添加到堆尾并上浮
-	mgr->heap[mgr->count] = new_timer;
-	mgr->count++;
-	heapify_up(mgr, mgr->count - 1);
-
-	// 如果是堆顶元素，唤醒工作线程
-	if (mgr->heap[0] == new_timer) {
+		timermgr->running = true;
+		timermgr->tasks = NULL;
 #ifdef _WIN32
-		SetEvent(mgr->event);
-#else
-		pthread_cond_signal(&mgr->cond);
-#endif
-	}
-
-#ifdef _WIN32 
-	ReleaseMutex(mgr->mutex);
+		timermgr->thread_handle = CreateThread(NULL, 0, timer_thread_run, timermgr, 0, NULL);
 #else 
-	pthread_mutex_unlock(&mgr->mutex);
+		pthread_create(&timermgr->thread_handle, NULL, timer_thread_run, timermgr);
 #endif 
-
-	return new_timer->id;
+	}
 }
 
-// 删除定时器（惰性删除）
-void timer_remove(uint32_t timer_id) {
-#ifdef _WIN32 
-	WaitForSingleObject(mgr->mutex, INFINITE);
-#else 
-	pthread_mutex_lock(&mgr->mutex);
-#endif 
-	for (int i = 0; i < mgr->count; i++) {
-		if (mgr->heap[i]->id == timer_id) {
-			mgr->heap[i]->is_active = false;
-			break;
-		}
-	}
-#ifdef _WIN32 
-	ReleaseMutex(mgr->mutex);
-#else 
-	pthread_mutex_unlock(&mgr->mutex);
-#endif 
-}
+void timer_destroy()
+{
+	if (timermgr != NULL)
+	{
+		AUTO_LOCK(&timermgr->lock);
+		timermgr->running = false;
+		lightevent_notify(&timermgr->event);
+		AUTO_UNLOCK(&timermgr->lock);
 
-// 销毁定时器系统
-void timer_destroy() {
-	// 设置停止标志
-#ifdef _WIN32 
-	WaitForSingleObject(mgr->mutex, INFINITE);
-#else 
-	pthread_mutex_lock(&mgr->mutex);
-#endif 
-	mgr->running = false;
-	// 唤醒工作线程
 #ifdef _WIN32
-	SetEvent(mgr->event);
+		WaitForSingleObject(timermgr->thread_handle, INFINITE);
+		CloseHandle(timermgr->thread_handle);
 #else
-	pthread_cond_signal(&mgr->cond);
+		pthread_join(timermgr->thread_handle, NULL);
 #endif
 
-#ifdef _WIN32 
-	ReleaseMutex(mgr->mutex);
-#else 
-	pthread_mutex_unlock(&mgr->mutex);
-#endif 
-
-	// 等待线程退出
-#ifdef _WIN32
-	WaitForSingleObject(mgr->thread_handle, INFINITE);
-	CloseHandle(mgr->thread_handle);
-	CloseHandle(mgr->mutex);
-	CloseHandle(mgr->event);
-#else
-	pthread_join(mgr->thread_handle, NULL);
-	pthread_mutex_destroy(&mgr->mutex);
-	pthread_cond_destroy(&mgr->cond);
-#endif
-
-	// 释放所有定时器
-	for (int i = 0; i < mgr->count; i++) {
-		free(mgr->heap[i]);
+		// 清理任务链表
+		timertasknode* node = timermgr->tasks;
+		while (node != NULL) {
+			timertasknode* next = node->next;
+			timer_task_destroy(node->task);
+			mempool_deallocate(mempool_getinstance(), node, sizeof(timertasknode));
+			node = next;
+		}
+		AUTO_LOCK_DESTORY(&timermgr->lock);
+		lightevent_destroy(&timermgr->event);
+		mempool_deallocate(mempool_getinstance(), timermgr, sizeof(timermanager));
+		timermgr = NULL;
 	}
-	free(mgr->heap);
-	free(mgr);
 }
+
+// 添加定时任务（指定具体时间）
+void timer_schedule(timertask* task, datetime futureTime, interval intervalVal) {
+	AUTO_LOCK(&timermgr->lock);
+	// 创建新节点
+	timertasknode* newNode = (timertasknode*)mempool_allocate(mempool_getinstance(), sizeof(timertasknode));
+	newNode->task = task;
+	newNode->nextTime = futureTime;
+	newNode->val = intervalVal;
+
+	// 插入到有序链表中（按nextTime升序）
+	timertasknode** pp = &timermgr->tasks;
+	while (*pp != NULL && datetime_less((*pp)->nextTime, futureTime)) {
+		pp = &((*pp)->next);
+	}
+	newNode->next = *pp;
+	*pp = newNode;
+
+	lightevent_notify(&timermgr->event);
+	AUTO_UNLOCK(&timermgr->lock);
+}
+
+// 添加定时任务（指定延迟时间）
+void timer_schedule_delay(timertask* task, interval delay, interval intervalVal) {
+	datetime dt = datetime_now();
+	datetime_add_interval(&dt, &delay);
+	timer_schedule(task, dt, intervalVal);
+}
+
+// 取消定时任务
+bool timer_cancel(timertask* task) {
+	if (timermgr == NULL) return false;
+
+	AUTO_LOCK(&timermgr->lock);
+
+	timertasknode** pp = &timermgr->tasks;
+	while (*pp != NULL) {
+		if ((*pp)->task == task) {
+			timertasknode* toRemove = *pp;
+			*pp = toRemove->next;
+			timer_task_destroy(toRemove->task);
+			mempool_deallocate(mempool_getinstance(), toRemove, sizeof(timertasknode));
+			AUTO_UNLOCK(&timermgr->lock);
+			return true;
+		}
+		pp = &((*pp)->next);
+	}
+	AUTO_UNLOCK(&timermgr->lock);
+	return false;
+}
+
 
 #ifdef _WIN32
 DWORD WINAPI timer_thread_run(LPVOID arg)
@@ -224,112 +135,82 @@ DWORD WINAPI timer_thread_run(LPVOID arg)
 void* timer_thread_run(void* arg)
 #endif
 {
-	TimerManager* mgr = (TimerManager*)arg;
-	while (mgr->running) {
-#ifdef _WIN32 
-		WaitForSingleObject(mgr->mutex, INFINITE);
-#else 
-		pthread_mutex_lock(&mgr->mutex);
-#endif 
+	while (1) {
+		AUTO_LOCK(&timermgr->lock);
 
-		uint64_t now = get_current_time();
-		uint64_t next_trigger = 0;
-
-		// 清理堆顶的不活跃定时器
-		while (mgr->count > 0 && !mgr->heap[0]->is_active) {
-			Timer* to_remove = mgr->heap[0];
-			mgr->heap[0] = mgr->heap[mgr->count - 1];
-			mgr->count--;
-			heapify_down(mgr, 0);
-			free(to_remove);
+		// 检查是否退出
+		if (!timermgr->running) {
+			AUTO_UNLOCK(&timermgr->lock);
+			break;
 		}
 
-		// 检查堆顶定时器是否需要触发
-		Timer* trigger_timer = NULL;
-		if (mgr->count > 0 && mgr->heap[0]->trigger_time <= now) {
-			trigger_timer = mgr->heap[0];
-			// 从堆中移除
-			mgr->heap[0] = mgr->heap[mgr->count - 1];
-			mgr->count--;
-			heapify_down(mgr, 0);
-		}
+		datetime now = datetime_now();
+		long long waitMillis = 1000; // 默认等待1秒
 
-		// 计算下一个触发时间
-		if (mgr->count > 0) {
-			next_trigger = mgr->heap[0]->trigger_time;
-		}
-
-#ifdef _WIN32 
-		ReleaseMutex(mgr->mutex);
-#else 
-		pthread_mutex_unlock(&mgr->mutex);
-#endif 
-
-		// 执行回调（无锁状态）
-		if (trigger_timer) {
-			trigger_timer->callback(trigger_timer->user_data);
-
-#ifdef _WIN32 
-			WaitForSingleObject(mgr->mutex, INFINITE);
-#else 
-			pthread_mutex_lock(&mgr->mutex);
-#endif 
-
-			// 处理重复定时器
-			if (trigger_timer->is_repeat && trigger_timer->is_active) {
-				trigger_timer->trigger_time = now + trigger_timer->interval * 1000;
-
-				// 重新插入堆
-				if (mgr->count >= mgr->capacity) {
-					resize_heap(mgr);
-				}
-				mgr->heap[mgr->count] = trigger_timer;
-				mgr->count++;
-				heapify_up(mgr, mgr->count - 1);
+		// 如果链表不为空，计算等待时间
+		if (timermgr->tasks != NULL) {
+			datetime nextTime = timermgr->tasks->nextTime;
+			if (datetime_less(nextTime, now)) {
+				waitMillis = 0;
 			}
 			else {
-				free(trigger_timer);
+				interval diff = datetime_sub(&nextTime, &now);
+				waitMillis = diff._timeSpan;
+				// 最大等待时间限制为1秒
+				if (waitMillis > 1000) 
+					waitMillis = 1000;
+				if (waitMillis < 0) 
+					waitMillis = 0;
+			}
+		}
+		AUTO_UNLOCK(&timermgr->lock);
+
+		// 等待条件变量
+		if (waitMillis > 0) {
+			lightevent_wait(&timermgr->event, waitMillis);
+		}
+
+		AUTO_LOCK(&timermgr->lock);
+
+		// 处理所有到期的任务
+		while (timermgr->tasks != NULL && datetime_less(timermgr->tasks->nextTime , now)) {
+			timertasknode* node = timermgr->tasks;
+			timermgr->tasks = node->next;
+
+			// 执行任务
+			if (node->task->func != NULL) {
+				node->task->func(node->task->arg);
 			}
 
-#ifdef _WIN32 
-			ReleaseMutex(mgr->mutex);
-#else 
-			pthread_mutex_unlock(&mgr->mutex);
-#endif 
+			// 如果是周期性任务，则重新安排
+			if (node->val._timeSpan > 0) {
+				// 更新下一次执行时间
+				datetime_add_interval(&node->nextTime, node->val._timeSpan);
+				// 如果执行时间已经过去，则跳过
+				if (datetime_less(node->nextTime, now)) 
+				{
+					datetime dt = datetime_now();
+					datetime_add_interval(&dt, node->val._timeSpan);
+					long long mils = datetime_getMillSecond(&dt);
+					datetime_init_milliseconds(&node->nextTime, mils, get_local_timezone(&now));
+				}
+
+				// 重新插入链表
+				timertasknode** pp = &timermgr->tasks;
+				while (*pp != NULL && datetime_less((*pp)->nextTime, node->nextTime)) {
+					pp = &((*pp)->next);
+				}
+				node->next = *pp;
+				*pp = node;
+			}
+			else {
+				// 一次性任务，释放资源
+				timer_task_destroy(node->task);
+				mempool_deallocate(mempool_getinstance(), node, sizeof(timertasknode));
+			}
 		}
 
-		// 计算等待时间
-		uint64_t wait_time = 0;
-		if (next_trigger > 0) {
-			wait_time = (next_trigger > now) ? (next_trigger - now) : 0;
-		}
-		else {
-			// 无定时器时的默认等待
-			wait_time = 10000; // 10ms
-		}
-
-		// 精确等待
-#ifdef _WIN32 
-		WaitForSingleObject(mgr->mutex, INFINITE);
-		if (mgr->count > 0) {
-			// 转换为毫秒，Windows事件等待最大为INFINITE
-			DWORD dwWait = (DWORD)(wait_time / 1000);
-			SignalObjectAndWait(mgr->mutex, mgr->event, dwWait, FALSE);
-		}
-		else {
-			ReleaseMutex(mgr->mutex);
-			Sleep(10);
-		}
-#else 
-		pthread_mutex_lock(&mgr->mutex);
-		if (mgr->count > 0) {
-			struct timespec ts;
-			ts.tv_sec = wait_time / 1000000;
-			ts.tv_nsec = (wait_time % 1000000) * 1000;
-			pthread_cond_timedwait(&mgr->cond, &mgr->mutex, &ts);
-		}
-		pthread_mutex_unlock(&mgr->mutex);
-#endif
+		AUTO_UNLOCK(&timermgr->lock);
 	}
 	return 0;
 }

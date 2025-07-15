@@ -253,6 +253,17 @@ bool asYMD(struct tm* time, unsigned long mills, const char ch,
 	return true;
 }
 
+void init_datetime()
+{
+	datetime_update(&datetime_lastDt);
+#ifdef _WIN32
+	CreateThread(NULL, 0, datetime_thread_run, NULL, 0, NULL);
+#else
+	pthread_t datetime_thread;
+	pthread_create(&datetime_thread, NULL, datetime_thread_run, NULL);
+#endif
+}
+
 bool datetime_init(datetime* dt, int year, int month, int day, int hour, int minute,
 	int second, int millseconds, short timezone)
 {
@@ -295,6 +306,11 @@ bool datetime_init_milliseconds(datetime* dt, long long millseconds, short timez
 	dt->_timeZone = dt->_showZone = timezone;
 	dt->_totalDaySpan = -1;
 	return true;
+}
+
+const datetime datetime_now()
+{
+	return datetime_lastDt;
 }
 
 void datetime_update(datetime* dt)
@@ -430,49 +446,49 @@ long datetime_getTimeZoneMills(datetime* dt)
 	return dt->_timeZone * 1000 * 3600;
 }
 
-int datetimee_getYear(datetime* dt)
+int datetime_getYear(datetime* dt)
 {
 	return datetime_getLocalTime(dt)->tm_year + 1900;
 }
 
-int datetimee_getMonth(datetime* dt)
+int datetime_getMonth(datetime* dt)
 {
 	return datetime_getLocalTime(dt)->tm_mon + 1;
 }
 
-int datetimee_getDay(datetime* dt)
+int datetime_getDay(datetime* dt)
 {
 	return datetime_getLocalTime(dt)->tm_mday;
 }
 
-int datetimee_getHour(datetime* dt)
+int datetime_getHour(datetime* dt)
 {
 	return datetime_getLocalTime(dt)->tm_hour;
 }
 
-int datetimee_getMinute(datetime* dt)
+int datetime_getMinute(datetime* dt)
 {
 	return datetime_getLocalTime(dt)->tm_min;
 }
 
-int datetimee_getSecond(datetime* dt)
+int datetime_getSecond(datetime* dt)
 {
 	return datetime_getLocalTime(dt)->tm_sec;
 }
 
-int datetimee_getDayOfWeek(datetime* dt)
+int datetime_getDayOfWeek(datetime* dt)
 {
 	return datetime_getLocalTime(dt)->tm_wday;
 }
 
-int datetimee_getMillSecond(datetime* dt)
+long long datetime_getMillSecond(datetime* dt)
 {
-	return  (int)(dt->_timeSpan % 1000);
+	return  (dt->_timeSpan % 1000);
 }
 
 void datetime_clearMillSecond(datetime* dt)
 {
-	dt->_timeSpan -= datetimee_getMillSecond(dt);
+	dt->_timeSpan -= datetime_getMillSecond(dt);
 }
 
 int datetime_getTotalDaySpan(datetime* dt)

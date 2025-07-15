@@ -16,6 +16,7 @@ function GolbalObj:init()
 	_G.cjson = require("cjson")
 	_G.bytestream = require("bytestream")
 	_G.objectpool = require("objectpool")
+	_G.timer = require("timer")
 	_G.pubconfig = require("common.public.pubconfig")
 	-- 加载全局lua文件
 	require("common.uti")

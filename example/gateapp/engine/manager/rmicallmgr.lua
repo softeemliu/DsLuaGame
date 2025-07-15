@@ -24,6 +24,8 @@ function RmiCallMgr:sendRmiData(sock, bystream )
 	
 	--发送消息
 	network.socket_send_data(sock,bystream)
+	--释放资源
+	objectpool.giveup_bytestream(bystream)
 end
 
 return RmiCallMgr

@@ -1,68 +1,54 @@
 #ifndef __TIMER_H__
 #define __TIMER_H__
 #include "public.h"
+#include "utils/datetime.h"
+#include "utils/lightlock.h"
+#include "utils/lightevent.h"
 
-//定时器回调函数
-typedef void(*TimerCallback)(void*);
-// 新增：用户数据释放函数类型
-typedef void(*UserDataFreeFunc)(void*);
 
-// 修改：扩展 Timer 结构
-typedef struct Timer {
-	uint32_t id;
-	uint32_t interval;
-	bool is_repeat;
-	TimerCallback callback;
-	void* user_data;
-	UserDataFreeFunc free_func;  // 用户数据释放函数
-	bool is_active;
-	uint64_t trigger_time;
-} Timer;
+// 定时任务函数指针
+typedef void(*timer_callback)(void*);
 
-typedef struct TimerManager {
-    // 定时器堆（最小堆实现）
-    Timer** heap;  
-    // 堆的容量和当前元素数量
-    uint32_t capacity;
-    uint32_t count;  
-    // 定时器ID生成器
-    uint32_t next_id;   
-    // 线程控制
+// 定时任务结构体
+typedef struct timertask {
+	timer_callback func;
+	void* arg; // 用户参数
+} timertask;
+
+// 定时器描述符
+typedef struct timertasknode{
+	datetime startTime;
+	datetime nextTime;
+	interval val;
+	timertask* task;
+	struct timertasknode* next;
+} timertasknode;
+
+
+// 定时器管理器
+typedef struct timermanager {
+	light_lock lock;
+	light_event event;
+	timertasknode* tasks;       // 主定时器链表
+	bool running;
 #ifdef _WIN32
-    HANDLE thread_handle;
+	HANDLE thread_handle;
 #else
-    pthread_t thread_handle;
+	pthread_t thread_handle;
 #endif
-    
-    // 同步原语
-#ifdef _WIN32
-    HANDLE mutex;   // 互斥锁
-    HANDLE event;   // 事件对象
-#else
-    pthread_mutex_t mutex;
-    pthread_cond_t cond;
-#endif
-    bool running;
-} TimerManager;
+} timermanager;
 
 
-// 获取当前时间（微秒）
-uint64_t get_current_time();
-// 堆操作函数
-void heap_swap(Timer** heap, int i, int j);
-void heapify_up(TimerManager* mgr, int index);
-void heapify_down(TimerManager* mgr, int index);
+// 创建定时任务
+timertask* timer_task_create(timer_callback func, void* arg);
+void timer_task_destroy(timertask* task);
 
-// 初始化定时器管理器 
-void timer_init(uint32_t initial_capacity);
-// 动态扩容堆
-void resize_heap(TimerManager* mgr);
-// 添加定时器（返回定时器ID）
-uint32_t timer_add(uint32_t interval, bool repeat, TimerCallback cb, void* data, UserDataFreeFunc free_func);
-// 删除定时器（惰性删除）
-void timer_remove(uint32_t timer_id);
-// 销毁定时器系统
+void timer_init();
 void timer_destroy();
+
+void timer_schedule(timertask* task, datetime futureTime, interval intervalVal);
+void timer_schedule_delay(timertask* task, interval delay, interval intervalVal);
+bool timer_cancel(timertask* task);
 
 #ifdef _WIN32
 DWORD WINAPI timer_thread_run(LPVOID arg);

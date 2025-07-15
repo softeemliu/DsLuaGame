@@ -41,13 +41,13 @@ typedef struct {
 	short _timeZone;
 	short _showZone;
 	int _totalDaySpan;
-	long long _timeSpan;
+	long long _timeSpan;			// 时间戳，单位毫秒
 	ds_tm* _tm;
 }datetime;
 
 // interval结构体 
 typedef struct {
-	long long _timeSpan;
+	long long _timeSpan;             // 时间间隔，单位毫秒
 }interval;
 
 
@@ -67,24 +67,25 @@ DWORD WINAPI datetime_thread_run(LPVOID arg);
 void* datetime_thread_run(void* arg);
 #endif
 
-
+void init_datetime();
 bool datetime_init(datetime* dt, int year, int month, int day, int hour, int minute,
 	int second, int millseconds, short timezone);
 bool datetime_init_milliseconds(datetime* dt, long long millseconds, short timezone);
+const datetime datetime_now();
 void datetime_update(datetime* dt);
 const ds_tm* datetime_getLocalTime(datetime* dt);
 void datetime_parse(datetime* dt, const char* val, const char* format);
 char* datetime_asstring(const datetime* dt, const char* format);
 long datetime_getTimeZoneMills(datetime* dt);
 
-int datetimee_getYear(datetime* dt);
-int datetimee_getMonth(datetime* dt);
-int datetimee_getDay(datetime* dt);
-int datetimee_getHour(datetime* dt);
-int datetimee_getMinute(datetime* dt);
-int datetimee_getSecond(datetime* dt);
-int datetimee_getDayOfWeek(datetime* dt);
-int datetimee_getMillSecond(datetime* dt);
+int datetime_getYear(datetime* dt);
+int datetime_getMonth(datetime* dt);
+int datetime_getDay(datetime* dt);
+int datetime_getHour(datetime* dt);
+int datetime_getMinute(datetime* dt);
+int datetime_getSecond(datetime* dt);
+int datetime_getDayOfWeek(datetime* dt);
+long long datetime_getMillSecond(datetime* dt);
 void datetime_clearMillSecond(datetime* dt);
 int datetime_getTotalDaySpan(datetime* dt);
 int datetime_getTotalDay(datetime* dt);

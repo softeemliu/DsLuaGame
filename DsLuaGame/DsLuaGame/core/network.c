@@ -225,8 +225,12 @@ DWORD WINAPI network_thread_run(LPVOID arg)
 			for (int i = 0; i < (int)g_net_server->_fdsW[0].fd_count; i++) {  //写数据
 				sock_t tmpfd = g_net_server->_fdsW[0].fd_array[i];
 				TreeNode* pNode = map_find(&_handleMap, (int)g_net_server->_fdsW[0].fd_array[i]);
-				if (pNode && ((ClientSession*)pNode->value)->write_cb) {
-					((ClientSession*)pNode->value)->write_cb(pNode);
+				if (pNode && ((ClientSession*)pNode->value)->write_cb) 
+				{
+					if (1 != ((ClientSession*)pNode->value)->write_cb(pNode))
+					{
+						remove_socket(pNode);
+					}
 				}
 			}
 

@@ -1,0 +1,109 @@
+I/NO_TAG   [07-14 14:28:19.957] PubConfig:initChannel, init channel
+I/NO_TAG   [07-14 14:28:19.958] ChannelLogic:initChannel, init channel
+I/NO_TAG   [07-14 14:28:19.958] init channel port:9500
+I/NO_TAG   [07-14 14:28:19.958] create socket, listen port:9500
+I/NO_TAG   [07-14 14:28:19.960] Network:createSocket , socket fd:512
+I/NO_TAG   [07-14 14:28:19.960] Server::initServer sucess ...
+I/NO_TAG   [07-14 14:28:19.960] Server:run, application running ...
+I/NO_TAG   [07-14 14:28:24.405] new connection from 192.168.8.32:52746
+I/NO_TAG   [07-14 14:28:24.405] NetworkMgr:addsession, sock:424
+I/NO_TAG   [07-14 14:28:24.406] onClientAccept,remote ip:192.168.8.32 session id:424
+I/NO_TAG   [07-14 14:28:28.074] Network:onNetworkMsg type:MQ data:33333
+I/NO_TAG   [07-14 14:28:34.400] Network:onNetworkMsg type:MQ data:6666666666666666666666666666666666666666666666666666666666666666666666666666666666
+I/NO_TAG   [07-14 14:57:46.813] PubConfig:initChannel, init channel
+I/NO_TAG   [07-14 14:57:46.813] ChannelLogic:initChannel, init channel
+I/NO_TAG   [07-14 14:57:46.813] init channel port:9500
+I/NO_TAG   [07-14 14:57:46.813] create socket, listen port:9500
+I/NO_TAG   [07-14 14:57:46.816] Network:createSocket , socket fd:448
+I/NO_TAG   [07-14 14:57:46.816] Server::initServer sucess ...
+I/NO_TAG   [07-14 14:57:46.816] Server:run, application running ...
+I/NO_TAG   [07-14 14:57:51.183] new connection from 192.168.8.32:56500
+I/NO_TAG   [07-14 14:57:51.183] NetworkMgr:addsession, sock:500
+I/NO_TAG   [07-14 14:57:51.183] onClientAccept,remote ip:192.168.8.32 session id:500
+I/NO_TAG   [07-14 14:57:54.858] Network:onNetworkMsg type:MQ data:88888
+I/NO_TAG   [07-14 14:57:57.436] Network:onNetworkMsg type:MQ data:55555555
+I/NO_TAG   [07-14 14:58:02.745] Network:onNetworkMsg type:MQ data:1121321窟限限限限
+I/NO_TAG   [07-14 14:58:16.568] network:onnetworkerror, clientIp: client close
+I/NO_TAG   [07-14 15:01:42.974] new connection from 192.168.8.32:56880
+I/NO_TAG   [07-14 15:01:44.892] NetworkMgr:addsession, sock:528
+I/NO_TAG   [07-14 15:01:44.893] onClientAccept,remote ip:192.168.8.32 session id:528
+I/NO_TAG   [07-14 15:01:48.924] Network:onNetworkMsg type:MQ data:333
+I/NO_TAG   [07-14 15:01:50.881] network:onnetworkerror, clientIp: client close
+I/NO_TAG   [07-14 15:01:56.522] PubConfig:initChannel, init channel
+I/NO_TAG   [07-14 15:01:56.525] ChannelLogic:initChannel, init channel
+I/NO_TAG   [07-14 15:01:56.525] init channel port:9500
+I/NO_TAG   [07-14 15:01:56.525] create socket, listen port:9500
+I/NO_TAG   [07-14 15:01:56.528] Network:createSocket , socket fd:512
+I/NO_TAG   [07-14 15:01:56.528] Server::initServer sucess ...
+I/NO_TAG   [07-14 15:01:56.528] Server:run, application running ...
+I/NO_TAG   [07-14 15:01:59.872] new connection from 192.168.8.32:56912
+I/NO_TAG   [07-14 15:01:59.872] NetworkMgr:addsession, sock:248
+I/NO_TAG   [07-14 15:01:59.872] onClientAccept,remote ip:192.168.8.32 session id:248
+I/NO_TAG   [07-14 15:02:01.878] network:onnetworkerror, clientIp:192.168.8.32 client close
+I/NO_TAG   [07-14 15:03:59.561] PubConfig:initChannel, init channel
+I/NO_TAG   [07-14 15:03:59.561] ChannelLogic:initChannel, init channel
+I/NO_TAG   [07-14 15:03:59.561] init channel port:9500
+I/NO_TAG   [07-14 15:03:59.561] create socket, listen port:9500
+I/NO_TAG   [07-14 15:03:59.565] Network:createSocket , socket fd:464
+I/NO_TAG   [07-14 15:03:59.565] Server::initServer sucess ...
+I/NO_TAG   [07-14 15:03:59.565] Server:run, application running ...
+I/NO_TAG   [07-14 15:04:03.441] new connection from 192.168.8.32:57126
+I/NO_TAG   [07-14 15:04:03.441] NetworkMgr:addsession, sock:476
+I/NO_TAG   [07-14 15:04:03.441] onClientAccept,remote ip:192.168.8.32 session id:476
+I/NO_TAG   [07-14 15:24:35.551] PubConfig:initChannel, init channel
+I/NO_TAG   [07-14 15:24:35.551] ChannelLogic:initChannel, init channel
+I/NO_TAG   [07-14 15:24:35.551] init channel port:9500
+I/NO_TAG   [07-14 15:24:35.551] create socket, listen port:9500
+I/NO_TAG   [07-14 15:24:35.556] Network:createSocket , socket fd:488
+I/NO_TAG   [07-14 15:24:35.556] Server::initServer sucess ...
+I/NO_TAG   [07-14 15:24:35.556] Server:run, application running ...
+I/NO_TAG   [07-14 15:24:38.688] new connection from 192.168.8.32:59264
+I/NO_TAG   [07-14 15:24:38.688] NetworkMgr:addsession, sock:476
+I/NO_TAG   [07-14 15:24:38.688] onClientAccept,remote ip:192.168.8.32 session id:476
+I/NO_TAG   [07-14 15:24:45.777] Network:onNetworkMsg type:MQ data:3333
+I/NO_TAG   [07-14 15:24:48.829] network:onnetworkerror, clientIp:192.168.8.32 client close
+I/NO_TAG   [07-14 15:44:42.371] PubConfig:initChannel, init channel
+I/NO_TAG   [07-14 15:44:42.373] ChannelLogic:initChannel, init channel
+I/NO_TAG   [07-14 15:44:42.373] init channel port:9500
+I/NO_TAG   [07-14 15:44:42.373] create socket, listen port:9500
+I/NO_TAG   [07-14 15:44:42.375] Network:createSocket , socket fd:432
+I/NO_TAG   [07-14 15:44:42.375] Server::initServer sucess ...
+I/NO_TAG   [07-14 15:44:42.376] Server:run, application running ...
+I/NO_TAG   [07-14 15:44:45.598] new connection from 192.168.8.32:61427
+I/NO_TAG   [07-14 15:44:45.598] NetworkMgr:addsession, sock:492
+I/NO_TAG   [07-14 15:44:45.598] onClientAccept,remote ip:192.168.8.32 session id:492
+I/NO_TAG   [07-14 15:45:30.157] PubConfig:initChannel, init channel
+I/NO_TAG   [07-14 15:45:30.158] ChannelLogic:initChannel, init channel
+I/NO_TAG   [07-14 15:45:30.158] init channel port:9500
+I/NO_TAG   [07-14 15:45:30.158] create socket, listen port:9500
+I/NO_TAG   [07-14 15:45:30.161] Network:createSocket , socket fd:492
+I/NO_TAG   [07-14 15:45:30.161] Server::initServer sucess ...
+I/NO_TAG   [07-14 15:45:30.161] Server:run, application running ...
+I/NO_TAG   [07-14 15:45:51.106] PubConfig:initChannel, init channel
+I/NO_TAG   [07-14 15:45:51.106] ChannelLogic:initChannel, init channel
+I/NO_TAG   [07-14 15:45:51.106] init channel port:9500
+I/NO_TAG   [07-14 15:45:51.106] create socket, listen port:9500
+I/NO_TAG   [07-14 15:45:51.109] Network:createSocket , socket fd:408
+I/NO_TAG   [07-14 15:45:51.109] Server::initServer sucess ...
+I/NO_TAG   [07-14 15:45:51.109] Server:run, application running ...
+I/NO_TAG   [07-14 15:46:26.967] PubConfig:initChannel, init channel
+I/NO_TAG   [07-14 15:46:26.967] ChannelLogic:initChannel, init channel
+I/NO_TAG   [07-14 15:46:26.967] init channel port:9500
+I/NO_TAG   [07-14 15:46:26.968] create socket, listen port:9500
+I/NO_TAG   [07-14 15:46:26.970] Network:createSocket , socket fd:460
+I/NO_TAG   [07-14 15:46:26.970] Server::initServer sucess ...
+I/NO_TAG   [07-14 15:46:26.970] Server:run, application running ...
+I/NO_TAG   [07-14 15:46:35.613] new connection from 192.168.8.32:61640
+I/NO_TAG   [07-14 15:46:35.613] NetworkMgr:addsession, sock:492
+I/NO_TAG   [07-14 15:46:35.613] onClientAccept,remote ip:192.168.8.32 session id:492
+I/NO_TAG   [07-14 15:47:38.087] network:onnetworkerror, clientIp:192.168.8.32 client close
+I/NO_TAG   [07-14 15:50:23.437] PubConfig:initChannel, init channel
+I/NO_TAG   [07-14 15:50:23.437] ChannelLogic:initChannel, init channel
+I/NO_TAG   [07-14 15:50:23.437] init channel port:9500
+I/NO_TAG   [07-14 15:50:23.437] create socket, listen port:9500
+I/NO_TAG   [07-14 15:50:23.440] Network:createSocket , socket fd:420
+I/NO_TAG   [07-14 15:50:23.440] Server::initServer sucess ...
+I/NO_TAG   [07-14 15:50:23.440] Server:run, application running ...
+I/NO_TAG   [07-14 15:50:26.274] new connection from 192.168.8.32:62092
+I/NO_TAG   [07-14 15:50:26.274] NetworkMgr:addsession, sock:364
+I/NO_TAG   [07-14 15:50:26.274] onClientAccept,remote ip:192.168.8.32 session id:364

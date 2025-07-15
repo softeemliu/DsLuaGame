@@ -120,6 +120,9 @@
     <ClInclude Include="..\..\DsLuaGame\DsLuaGame\objectpool\objectpool.h">
       <Filter>源文件\objectpool</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\utils\lightevent.h">
+      <Filter>源文件\utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\DsLuaGame\DsLuaGame\main.c">
@@ -226,6 +229,9 @@
     </ClCompile>
     <ClCompile Include="..\..\DsLuaGame\DsLuaGame\tolua\objectpooltolua.c">
       <Filter>源文件\tolua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\utils\lightevent.c">
+      <Filter>源文件\utils</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

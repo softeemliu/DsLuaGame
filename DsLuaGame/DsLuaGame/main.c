@@ -127,6 +127,7 @@ int main(int argc, char** argv)
 	}
 
 	LoadConfig();
+	load_lua_bridge(g_L);
 	// 加载主脚本
 	if (load_lua_file(main_script) != LUA_OK)
 	{
@@ -154,8 +155,6 @@ int main(int argc, char** argv)
 		// 3. 清空堆栈（避免后续操作受影响）
 		lua_settop(g_L, 0);
 	}
-	// 成功加载后才初始化
-	load_lua_bridge(g_L);
 	//主线程阻塞等待退出,在lua里面调用等待函数
 	//waitStop();
 	//关闭lua虚拟机
