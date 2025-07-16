@@ -148,6 +148,7 @@ void transplant(CMap* map, TreeNode* u, TreeNode* v) {
 	else {
 		u->parent->right = v;
 	}
+	// 确保 v 不为 NULL 再设置父指针
 	if (v != NULL) {
 		v->parent = u->parent;
 	}
@@ -156,26 +157,43 @@ void transplant(CMap* map, TreeNode* u, TreeNode* v) {
 // 修复删除后的红黑树性质 
 void fix_delete(CMap* map, TreeNode* x) {
 	while (x != map->root && (x == NULL || x->color == BLACK)) {
-		if (x != NULL && x->parent != NULL && x == x->parent->left) {
+		// 关键修改 6：添加 NULL 检查
+		if (x == NULL) {
+			break;
+		}
+
+		// 关键修改 7：增强指针安全检查
+		if (x->parent == NULL) {
+			break;
+		}
+
+		if (x == x->parent->left) {
 			TreeNode* w = x->parent->right;
-			if (w != NULL && w->color == RED) {
+			// 关键修改 8：检查兄弟节点是否存在
+			if (w == NULL) {
+				break;
+			}
+
+			if (w->color == RED) {
 				w->color = BLACK;
 				x->parent->color = RED;
 				left_rotate(map, x->parent);
 				w = x->parent->right;
+				if (w == NULL) break; // 再次检查
 			}
-			if (w != NULL &&
-				((w->left == NULL || w->left->color == BLACK) &&
-				(w->right == NULL || w->right->color == BLACK))) {
+
+			if ((w->left == NULL || w->left->color == BLACK) &&
+				(w->right == NULL || w->right->color == BLACK)) {
 				w->color = RED;
 				x = x->parent;
 			}
-			else if (w != NULL) {
+			else {
 				if (w->right == NULL || w->right->color == BLACK) {
 					if (w->left != NULL) w->left->color = BLACK;
 					w->color = RED;
 					right_rotate(map, w);
 					w = x->parent->right;
+					if (w == NULL) break;
 				}
 				w->color = x->parent->color;
 				x->parent->color = BLACK;
@@ -184,26 +202,33 @@ void fix_delete(CMap* map, TreeNode* x) {
 				x = map->root;
 			}
 		}
-		else if (x != NULL && x->parent != NULL) {
+		else {
+			// 对称处理右子树（添加相同的安全检查）
 			TreeNode* w = x->parent->left;
-			if (w != NULL && w->color == RED) {
+			if (w == NULL) {
+				break;
+			}
+
+			if (w->color == RED) {
 				w->color = BLACK;
 				x->parent->color = RED;
 				right_rotate(map, x->parent);
 				w = x->parent->left;
+				if (w == NULL) break;
 			}
-			if (w != NULL &&
-				((w->right == NULL || w->right->color == BLACK) &&
-				(w->left == NULL || w->left->color == BLACK))) {
+
+			if ((w->right == NULL || w->right->color == BLACK) &&
+				(w->left == NULL || w->left->color == BLACK)) {
 				w->color = RED;
 				x = x->parent;
 			}
-			else if (w != NULL) {
+			else {
 				if (w->left == NULL || w->left->color == BLACK) {
 					if (w->right != NULL) w->right->color = BLACK;
 					w->color = RED;
 					left_rotate(map, w);
 					w = x->parent->left;
+					if (w == NULL) break;
 				}
 				w->color = x->parent->color;
 				x->parent->color = BLACK;
@@ -213,7 +238,11 @@ void fix_delete(CMap* map, TreeNode* x) {
 			}
 		}
 	}
-	if (x != NULL) x->color = BLACK;
+
+	// 关键修改 9：安全设置颜色
+	if (x != NULL) {
+		x->color = BLACK;
+	}
 }
 
 // 删除节点 
@@ -222,8 +251,7 @@ void map_delete(CMap* map, int key) {
 	TreeNode* y = NULL;
 	TreeNode* x = NULL;
 	Color y_original_color;
-
-	// 查找要删除的节点 
+	// 查找要删除的节点
 	while (z != NULL && z->key != key) {
 		if (map->compare(key, z->key) < 0) {
 			z = z->left;
@@ -252,7 +280,10 @@ void map_delete(CMap* map, int key) {
 		}
 		y_original_color = y->color;
 		x = y->right;
+
+		// 关键修改 1：正确处理后继节点指针
 		if (y->parent == z) {
+			// 如果 y 是 z 的直接右子节点
 			if (x != NULL) {
 				x->parent = y;
 			}
@@ -260,18 +291,28 @@ void map_delete(CMap* map, int key) {
 		else {
 			transplant(map, y, y->right);
 			y->right = z->right;
-			y->right->parent = y;
+			// 关键修改 2：添加 NULL 检查
+			if (y->right != NULL) {
+				y->right->parent = y;
+			}
 		}
+
 		transplant(map, z, y);
 		y->left = z->left;
-		y->left->parent = y;
+		// 关键修改 3：添加 NULL 检查
+		if (y->left != NULL) {
+			y->left->parent = y;
+		}
 		y->color = z->color;
 	}
 
+	// 关键修改 4：安全调用修复函数
 	if (y_original_color == BLACK) {
 		fix_delete(map, x);
 	}
 
+	// 关键修改 5：安全释放节点
+	z->left = z->right = z->parent = NULL; // 断开所有指针连接
 	free(z);
 }
 

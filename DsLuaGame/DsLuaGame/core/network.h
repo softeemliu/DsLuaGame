@@ -6,8 +6,7 @@
 #include "inputstream.h"
 #include "protocol.h"
 #include "bytestream.h"
-
-typedef int(*event_cb)(void*);   //读数据回调函数
+#include "session.h"
 
 //服务器网络信息结构体
 typedef struct
@@ -33,17 +32,6 @@ typedef struct
 }CNetServer;
 
 
-// 客户端连接结构
-typedef struct _ClientSession{
-	sock_t sock;                // 套接字描述符
-	time_t last_active;       // 最后活动时间
-	event_cb read_cb;   //读数据回调函数
-	event_cb write_cb;  //写数据回调函数
-	event_cb remove_cb;  //写数据回调函数
-	inputstream _instream;
-} ClientSession;
-
-
 //初始化网络
 void init_network(int size);
 //销毁
@@ -52,9 +40,6 @@ void fina_network();
 void write_socket_error(const char* context, sock_t sock);
 int handle_connect_error(sock_t sock);
 
-//创建一个链接session
-ClientSession* create_session(sock_t sock, event_cb rcb, event_cb wcb, event_cb ecb);
-void delete_session(void* node);
 // 网络线程函数
 #ifdef _WIN32
 DWORD WINAPI network_thread_run(LPVOID arg);
@@ -79,7 +64,7 @@ encryptAddLength：加密增加的长度
 void make_protocol_head(SProtocolHead* head, int len,int sourceLen,bool compress,bool encrypt,byte_t encryptAddLength);
 
 int socket_send_data(sock_t sock, bytestream* bystream);
-void insert_handle(sock_t sock, ClientSession* cc);
+void insert_handle(sock_t sock, CSession* cc);
 
 //网络操作函数
 int accept_socket(void* arg);

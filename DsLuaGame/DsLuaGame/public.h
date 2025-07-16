@@ -15,6 +15,7 @@
 
 #ifdef _WIN32
 #include <windows.h>
+#include <time.h> 
 #pragma comment(lib, "ws2_32.lib")  
 typedef SOCKET sock_t;
 #define BAD_SOCKET INVALID_SOCKET
@@ -22,6 +23,7 @@ typedef SOCKET sock_t;
 typedef void * HANDLE;
 typedef unsigned long DWORD;
 typedef void* LPVOID;
+
 #else
 
 #include <sys/socket.h>

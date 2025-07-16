@@ -39,7 +39,7 @@ void lightevent_destroy(light_event* obj)
 		CloseHandle(obj->_event);
 	}
 #else
-	if (obj->_event != CDF_EVENT_NULL) {
+	if (obj->_event != LG_EVENT_NULL) {
 		sem_destroy(obj->_event);
 		mempool_deallocate(mempool_getinstance(), obj->_event, sizeof(sem_t));
 	}
@@ -59,7 +59,7 @@ int lightevent_wait(light_event* obj, int mill)
 	return -1; 
 #else
 	if (mill == LG_INFINITE || mill < 0) {
-        return (sem_wait(obj->_event) == 0 ? 0 : -1;
+        return sem_wait(obj->_event) == 0 ? 0 : -1;
     }
 
     struct timespec ts;

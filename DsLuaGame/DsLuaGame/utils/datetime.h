@@ -1,26 +1,7 @@
 #ifndef __DATE_TIME_H__
 #define __DATE_TIME_H__
-#include <time.h> 
-#include <string.h> 
-#include <stdlib.h> 
-#include <stdio.h> 
-#include <stdbool.h>
+#include "public.h"
 
-#ifdef _WIN32
-#include <windows.h>
-#else
-
-#endif
-
-#ifndef long64_t
-#ifdef _WIN32
-typedef unsigned __int64 ulong64_t;
-typedef __int64 long64_t;
-#else
-typedef __int64_t long64_t;
-typedef __uint64_t ulong64_t;
-#endif
-#endif
 
 // 定义常量 
 #define DEFAULT_DATETIME_FORMAT "YYYY-MM-DD hh:mm:ss.nnn"  
@@ -52,13 +33,13 @@ typedef struct {
 
 
 // 全局静态变量 
-extern datetime datetime_zero;
-extern datetime datetime_forever;
-extern interval interval_zero;
-extern interval interval_oneMinute;
-extern interval interval_oneHour;
-extern interval interval_oneDay;
-extern datetime datetime_lastDt;
+datetime datetime_zero;
+datetime datetime_forever;
+interval interval_zero;
+interval interval_oneMinute;
+interval interval_oneHour;
+interval interval_oneDay;
+datetime datetime_lastDt;
 
 
 #ifdef _WIN32
@@ -96,6 +77,8 @@ interval datetime_sub(datetime* dt, datetime* other);
 void datetime_sub_interval(datetime* dt, interval* val);
 void datetime_add_interval(datetime* dt, interval* val);
 
+
+
 /*
 int datetime_equals(const datetime*dt, const datetime* other);
 int datetime_less_than(const datetime*dt, const datetime* other);
@@ -104,6 +87,8 @@ int datetime_greater_than(const datetime*dt, const datetime* other);
 
 void datetime_set_timezone(datetime* dt, short timezone);
 int get_local_timezone(datetime* dt);
+
+bool datetime_less(datetime a, datetime b);
 
 
 

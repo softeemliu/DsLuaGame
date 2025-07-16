@@ -1,14 +1,14 @@
 #ifndef __NET_MSG_BLOCK_H__
 #define __NET_MSG_BLOCK_H__
 #include "tolua/bridge/luacallbridge.h"
+#include "core/session.h"
 
-typedef struct _ClientSession ClientSession;
 
 typedef struct
 {
 	unsigned char* _pbuf;
 	int32_t _buflen;
-	ClientSession* _clsptr;
+	CSession* _clsptr;
 }netinfo;
 
 //定义netmsgblock结构体

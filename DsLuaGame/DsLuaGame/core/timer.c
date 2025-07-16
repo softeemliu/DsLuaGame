@@ -7,12 +7,6 @@
 // 全局实例
 timermanager* timermgr = NULL;
 
-// 时间比较 (a < b)
-bool datetime_less(datetime a, datetime b) {
-	return a._timeSpan < b._timeSpan;
-}
-
-
 // 创建定时任务
 timertask* timer_task_create(timer_callback func, void* arg) {
 	timertask* task = (timertask*)mempool_allocate(mempool_getinstance(), sizeof(timertask));
@@ -185,12 +179,12 @@ void* timer_thread_run(void* arg)
 			// 如果是周期性任务，则重新安排
 			if (node->val._timeSpan > 0) {
 				// 更新下一次执行时间
-				datetime_add_interval(&node->nextTime, node->val._timeSpan);
+				datetime_add_interval(&node->nextTime, &node->val);
 				// 如果执行时间已经过去，则跳过
 				if (datetime_less(node->nextTime, now)) 
 				{
 					datetime dt = datetime_now();
-					datetime_add_interval(&dt, node->val._timeSpan);
+					datetime_add_interval(&dt, &node->val);
 					long long mils = datetime_getMillSecond(&dt);
 					datetime_init_milliseconds(&node->nextTime, mils, get_local_timezone(&now));
 				}

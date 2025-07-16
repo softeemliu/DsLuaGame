@@ -123,6 +123,9 @@
     <ClInclude Include="..\..\DsLuaGame\DsLuaGame\utils\lightevent.h">
       <Filter>源文件\utils</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\core\session.h">
+      <Filter>源文件\core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\DsLuaGame\DsLuaGame\main.c">
@@ -232,6 +235,9 @@
     </ClCompile>
     <ClCompile Include="..\..\DsLuaGame\DsLuaGame\utils\lightevent.c">
       <Filter>源文件\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\core\session.c">
+      <Filter>源文件\core</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

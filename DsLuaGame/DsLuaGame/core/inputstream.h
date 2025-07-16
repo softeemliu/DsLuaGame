@@ -2,7 +2,6 @@
 #define __INPUT_STREAM_H__
 #include "public.h"
 
-typedef struct _ClientSession ClientSession;
 
 typedef struct _inputstream
 {
@@ -10,7 +9,7 @@ typedef struct _inputstream
     unsigned char* _rtag;
     unsigned char* _wtag;
     uint32_t _totalbufflen;
-	ClientSession* _phandle;
+	void* _phandle;
 }inputstream;
 
 
@@ -19,7 +18,7 @@ void init_input_stream(inputstream* stream);
 //销毁
 void destory_input_stream(inputstream* stream);
 //
-void input_stream_inithandle(inputstream* stream, ClientSession* cl);
+void input_stream_inithandle(inputstream* stream, void* cl);
 //处理数据
 bool input_stream_analyse_data(inputstream* stream);
 //查找消息头

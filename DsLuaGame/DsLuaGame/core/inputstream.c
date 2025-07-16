@@ -25,7 +25,7 @@ void destory_input_stream(inputstream* stream)
 }
 
 //
-void input_stream_inithandle(inputstream* stream, ClientSession* cl)
+void input_stream_inithandle(inputstream* stream, void* cl)
 {
 	init_input_stream(stream);
 

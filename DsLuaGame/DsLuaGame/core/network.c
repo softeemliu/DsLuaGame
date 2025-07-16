@@ -7,6 +7,7 @@
 #include "utils/endian.h"
 #include "objectpool/objectpool.h"
 #include "tolua/bridge/luacallbridge.h"
+#include "utils/datetime.h"
 
 
 
@@ -167,34 +168,6 @@ int handle_connect_error(sock_t sock)
 #endif
 }
 
-ClientSession* create_session(sock_t sock, event_cb rcb, event_cb wcb, event_cb ecb)
-{
-	ClientSession* cc = (ClientSession*)malloc(sizeof(ClientSession));
-	if (!cc)
-	{
-		log_e("memory allocation failed for session");
-		return NULL;
-	}
-	memset(cc, 0, sizeof(ClientSession));
-	cc->sock = sock;
-	cc->last_active = time(NULL);
-	cc->read_cb = rcb;
-	cc->write_cb = wcb;
-	cc->remove_cb = ecb;
-
-	input_stream_inithandle(&cc->_instream, cc);
-	return cc;
-}
-
-void delete_session(void* node)
-{
-	ClientSession* cc = (ClientSession*)node;
-	if (cc)
-	{
-		safe_close_socket(&cc->sock);
-		free(cc);
-	}
-}
 
 // 网络线程（平台相关实现）
 #ifdef _WIN32
@@ -216,18 +189,18 @@ DWORD WINAPI network_thread_run(LPVOID arg)
 			// 处理活跃连接
 			for (int i = 0; i < (int)g_net_server->_fdsR[0].fd_count; i++) {
 				TreeNode* pNode = map_find(&_handleMap, (int)g_net_server->_fdsR[0].fd_array[i]);
-				if (NULL != pNode && ((ClientSession*)pNode->value)->read_cb)
+				if (NULL != pNode && ((CSession*)pNode->value)->read_cb)
 				{
-					((ClientSession*)pNode->value)->read_cb(pNode);
+					((CSession*)pNode->value)->read_cb(pNode);
 				}
 			}
 
 			for (int i = 0; i < (int)g_net_server->_fdsW[0].fd_count; i++) {  //写数据
 				sock_t tmpfd = g_net_server->_fdsW[0].fd_array[i];
 				TreeNode* pNode = map_find(&_handleMap, (int)g_net_server->_fdsW[0].fd_array[i]);
-				if (pNode && ((ClientSession*)pNode->value)->write_cb) 
+				if (pNode && ((CSession*)pNode->value)->write_cb)
 				{
-					if (1 != ((ClientSession*)pNode->value)->write_cb(pNode))
+					if (1 != ((CSession*)pNode->value)->write_cb(pNode))
 					{
 						remove_socket(pNode);
 					}
@@ -236,8 +209,8 @@ DWORD WINAPI network_thread_run(LPVOID arg)
 
 			for (int i = 0; i < (int)g_net_server->_fdsE[0].fd_count; i++){  //异常数据
 				TreeNode* pNode = map_find(&_handleMap, (int)g_net_server->_fdsE[0].fd_array[i]);
-				if (pNode && ((ClientSession*)pNode->value)->remove_cb) {
-					((ClientSession*)pNode->value)->remove_cb(pNode);
+				if (pNode && ((CSession*)pNode->value)->remove_cb) {
+					((CSession*)pNode->value)->remove_cb(pNode);
 				}
 			}
 		}
@@ -273,23 +246,39 @@ void* network_thread_run(void* arg) {
 
 		AUTO_LOCK(&g_net_server->lock);
 		for (int i = 0; i < nfds; i++) {
-			TreeNode* pNode = map_find(&_handleMap, events[i].data.fd);
-			if (!pNode) continue;
-
-			ClientSession* cc = (ClientSession*)pNode->value;
 			uint32_t revents = events[i].events;
+			if (revents & EPOLLIN)   //读数据
+			{
+				TreeNode* pNode = map_find(&_handleMap, events[i].data.fd);
+				if (!pNode) continue;
 
-			if (revents & EPOLLIN && cc->read_cb)   //读数据
-			{
-				cc->read_cb(pNode);
+				CSession* cc = (CSession*)pNode->value;
+				if (cc && cc->read_cb)
+				{
+					cc->read_cb(pNode);
+				}
 			}
-			if (revents & EPOLLOUT && cc->write_cb) //写数据
+			if (revents & EPOLLOUT) //写数据
 			{
-				cc->write_cb(pNode);
+				TreeNode* pNode = map_find(&_handleMap, events[i].data.fd);
+				if (!pNode) continue;
+
+				CSession* cc = (CSession*)pNode->value;
+				if (cc && cc->write_cb)
+				{
+					cc->write_cb(pNode);
+				}
 			}
-			if ((revents & (EPOLLHUP | EPOLLERR)) && cc->remove_cb)  // 异常数据
+			if ((revents & (EPOLLHUP | EPOLLERR)))  // 异常数据
 			{
-				cc->remove_cb(pNode);
+				TreeNode* pNode = map_find(&_handleMap, events[i].data.fd);
+				if (!pNode) continue;
+
+				CSession* cc = (CSession*)pNode->value;
+				if (cc && cc->remove_cb)
+				{
+					cc->remove_cb(pNode);
+				}
 			}
 		}
 		AUTO_UNLOCK(&g_net_server->lock);
@@ -338,7 +327,7 @@ sock_t create_socket(int port)
 		return SOCKET_ERROR;
 	}
 	// 添加监听socket到管理器
-	ClientSession* cc = create_session(g_net_server->_sock, accept_socket, NULL, NULL);
+	CSession* cc = create_session(g_net_server->_sock, accept_socket, NULL, NULL);
 	if (cc) {
 		insert_handle(g_net_server->_sock, cc);
 	}
@@ -378,9 +367,11 @@ int connect_server(const char* host, int port)
 	set_reuse(sock, 1);
 
 	// 创建并插入会话
-	ClientSession* session = create_session(sock, read_socket, write_socket, remove_socket);
+	CSession* session = create_session(sock, read_socket, write_socket, remove_socket);
 	if (session) {
 		insert_handle(sock, session);
+		//添加心跳定时器
+		session_addtimer(session, ESTaskTypeKeepAlive);
 		return (int)sock;
 	}
 
@@ -535,7 +526,7 @@ int socket_send_data(sock_t sock, bytestream* bystream)
 	return bytesSent;
 }
 
-void insert_handle(sock_t sock, ClientSession* cc)
+void insert_handle(sock_t sock, CSession* cc)
 {
 	if (!cc || sock <= 0) return;
 
@@ -565,7 +556,7 @@ int accept_socket(void* arg)
 	TreeNode* pNode = (TreeNode*)arg;
 	if (!pNode) return 0;
 
-	ClientSession* server_cc = (ClientSession*)pNode->value;
+	CSession* server_cc = (CSession*)pNode->value;
 	sock_t server_sock = server_cc->sock;
 
 	while (1)
@@ -598,7 +589,7 @@ int accept_socket(void* arg)
 			set_recv_time(new_fd, 0);
 
 			// 创建客户端连接
-			ClientSession* client_cc = create_session(new_fd, read_socket, write_socket, remove_socket);
+			CSession* client_cc = create_session(new_fd, read_socket, write_socket, remove_socket);
 			if (client_cc)
 			{
 				insert_handle(new_fd, client_cc);
@@ -613,6 +604,9 @@ int accept_socket(void* arg)
 
 				//调用lua函数，把连接放入管理器中
 				lua_handler("onNetworkAccept", new_fd, inet_ntoa(their_addr.sin_addr));
+				//添加定时器
+				session_addtimer(client_cc, ESTaskTypeFirstPack);
+
 			}
 			else
 			{
@@ -628,7 +622,7 @@ int read_socket(void* arg)
 	TreeNode* pNode = (TreeNode*)arg;
 	if (!pNode) return -1;
 
-	ClientSession* cc = (ClientSession*)pNode->value;
+	CSession* cc = (CSession*)pNode->value;
 	if (!cc) return -2;
 
 	char buff[10 * 1024] = { 0 };
@@ -657,12 +651,15 @@ int read_socket(void* arg)
 		}
 		else
 		{
+			printf("recv data size: %d\n", nRec);
 			input_stream_write(&cc->_instream, buff, nRec);
 			input_stream_analyse_data(&cc->_instream);
 			total_read += nRec;
 
 			// 更新最后活动时间
-			cc->last_active = time(NULL);
+			datetime now = datetime_now();
+			cc->last_active = datetime_getTotalMill(&now);
+			session_removetimer(cc, ESTaskTypeFirstPack);
 		}
 	}
 	return total_read;
@@ -673,7 +670,7 @@ int write_socket(void* arg)
 	TreeNode* pNode = (TreeNode*)arg;
 	if (!pNode) return -1;
 
-	ClientSession* cc = (ClientSession*)pNode->value;
+	CSession* cc = (CSession*)pNode->value;
 	if (!cc) return -2;
 	//调用lua回调函数，通知发送数据成功
 	//如果发送失败，则通知lua, 按照实际需求处理失败的情况
@@ -687,11 +684,12 @@ int remove_socket(void* arg)
 	{
 		return -1;
 	}
-	ClientSession* cc = (ClientSession*)pNode->value;
+	CSession* cc = (CSession*)pNode->value;
 	if (cc == NULL)
 	{
 		return -2;
 	}
+
 	AUTO_LOCK(&g_net_server->lock);
 #ifdef _WIN32
 	FD_CLR(cc->sock, &g_net_server->_fdsW[1]);
@@ -708,13 +706,15 @@ int remove_socket(void* arg)
 	}
 #endif 
 
+
 	//调用lua回调函数，通知发送数据成功
 	lua_handler("onNetworkError", cc->sock, "client close");
 	//删除
-	map_delete(&_handleMap, (int)cc->sock);
+	sock_t sock = cc->sock;
+	delete_session(cc);
+	map_delete(&_handleMap, sock);
 	// 关闭socket并释放资源
-	safe_close_socket(&cc->sock);
-	free(cc);
 	AUTO_UNLOCK(&g_net_server->lock);
+
 	return 1;
 }

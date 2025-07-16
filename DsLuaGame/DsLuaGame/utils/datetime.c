@@ -19,7 +19,7 @@ void* datetime_thread_run(void* arg)
 }
 
 
-bool parseYMD(struct tm* time, unsigned long* millis, const char ch, const char* value, int index, int length, int count) {
+bool parseYMD(struct tm* t, unsigned long* millis, const char ch, const char* value, int index, int length, int count) {
 	char buf[5];
 	int nvalue = 0;
 	if (index + count > length)
@@ -40,7 +40,7 @@ bool parseYMD(struct tm* time, unsigned long* millis, const char ch, const char*
 			nvalue -= 1900;
 		else
 			return false;
-		time->tm_year = nvalue;
+		t->tm_year = nvalue;
 		break;
 	case 'M':
 		if (count > 2)
@@ -50,7 +50,7 @@ bool parseYMD(struct tm* time, unsigned long* millis, const char ch, const char*
 		nvalue = atoi(buf);
 		if (nvalue > 12 || nvalue <= 0)
 			return false;
-		time->tm_mon = nvalue - 1;
+		t->tm_mon = nvalue - 1;
 		break;
 	case 'D':
 		if (count > 2)
@@ -60,7 +60,7 @@ bool parseYMD(struct tm* time, unsigned long* millis, const char ch, const char*
 		nvalue = atoi(buf);
 		if (nvalue > 31 || nvalue <= 0)
 			return false;
-		time->tm_mday = nvalue;
+		t->tm_mday = nvalue;
 		break;
 	case 'h':
 		if (count > 2)
@@ -70,7 +70,7 @@ bool parseYMD(struct tm* time, unsigned long* millis, const char ch, const char*
 		nvalue = atoi(buf);
 		if (nvalue > 23 || nvalue < 0)
 			return false;
-		time->tm_hour = nvalue;
+		t->tm_hour = nvalue;
 		break;
 	case 'm':
 		if (count > 2)
@@ -80,7 +80,7 @@ bool parseYMD(struct tm* time, unsigned long* millis, const char ch, const char*
 		nvalue = atoi(buf);
 		if (nvalue > 59 || nvalue < 0)
 			return false;
-		time->tm_min = nvalue;
+		t->tm_min = nvalue;
 		break;
 	case 's':
 		if (count > 2)
@@ -90,7 +90,7 @@ bool parseYMD(struct tm* time, unsigned long* millis, const char ch, const char*
 		nvalue = atoi(buf);
 		if (nvalue > 59 || nvalue < 0)
 			return false;
-		time->tm_sec = nvalue;
+		t->tm_sec = nvalue;
 		break;
 	case 'n':
 		if (count > 3)
@@ -255,6 +255,12 @@ bool asYMD(struct tm* time, unsigned long mills, const char ch,
 
 void init_datetime()
 {
+	datetime_init(&datetime_forever, 2035, 12, 31, 23, 59, 59, 999, 0);
+	interval_create_milliseconds(&interval_zero, 0);
+	interval_create_milliseconds(&interval_oneMinute, 60 * 1000);
+	interval_create_milliseconds(&interval_oneHour, 60 * 60 * 1000);
+	interval_create_milliseconds(&interval_oneDay, 24 * 60 * 60 * 1000);
+
 	datetime_update(&datetime_lastDt);
 #ifdef _WIN32
 	CreateThread(NULL, 0, datetime_thread_run, NULL, 0, NULL);
@@ -310,6 +316,10 @@ bool datetime_init_milliseconds(datetime* dt, long long millseconds, short timez
 
 const datetime datetime_now()
 {
+	if (datetime_getTotalMill(&datetime_lastDt) == 0)
+	{
+		datetime_update(&datetime_lastDt);
+	}
 	return datetime_lastDt;
 }
 
@@ -565,6 +575,11 @@ void datetime_set_timezone(datetime* dt, short timezone)
 int get_local_timezone(datetime* dt)
 {
 	return dt->_timeZone;
+}
+
+// 时间比较 (a < b)
+bool datetime_less(datetime a, datetime b) {
+	return a._timeSpan < b._timeSpan;
 }
 
 

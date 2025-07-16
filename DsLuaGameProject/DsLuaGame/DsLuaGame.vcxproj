@@ -28,6 +28,7 @@
     <ClInclude Include="..\..\DsLuaGame\DsLuaGame\core\netsocket.h" />
     <ClInclude Include="..\..\DsLuaGame\DsLuaGame\core\network.h" />
     <ClInclude Include="..\..\DsLuaGame\DsLuaGame\core\protocol.h" />
+    <ClInclude Include="..\..\DsLuaGame\DsLuaGame\core\session.h" />
     <ClInclude Include="..\..\DsLuaGame\DsLuaGame\core\timer.h" />
     <ClInclude Include="..\..\DsLuaGame\DsLuaGame\database\mysqlconn.h" />
     <ClInclude Include="..\..\DsLuaGame\DsLuaGame\logger\elog.h" />
@@ -55,6 +56,7 @@
     <ClCompile Include="..\..\DsLuaGame\DsLuaGame\core\netmsgqueue.c" />
     <ClCompile Include="..\..\DsLuaGame\DsLuaGame\core\netsocket.c" />
     <ClCompile Include="..\..\DsLuaGame\DsLuaGame\core\network.c" />
+    <ClCompile Include="..\..\DsLuaGame\DsLuaGame\core\session.c" />
     <ClCompile Include="..\..\DsLuaGame\DsLuaGame\core\timer.c" />
     <ClCompile Include="..\..\DsLuaGame\DsLuaGame\database\mysqlconn.c" />
     <ClCompile Include="..\..\DsLuaGame\DsLuaGame\logger\elog.c" />
