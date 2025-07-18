@@ -5,12 +5,13 @@
 #include "protocol.h"
 #include "objectpool/objectpool.h"
 #include "logger/elog.h"
+#include "mempool.h"
 
 //初始化
 void init_input_stream(inputstream* stream)
 {
     stream->_totalbufflen = 10 * 1024;
-    stream->_pbuff = (unsigned char*)malloc(stream->_totalbufflen);
+    stream->_pbuff = (unsigned char*)mempool_allocate(mempool_getinstance(),stream->_totalbufflen);
     stream->_rtag = stream->_wtag = stream->_pbuff;
     stream->_phandle = NULL;
 }
@@ -18,7 +19,7 @@ void init_input_stream(inputstream* stream)
 //销毁
 void destory_input_stream(inputstream* stream)
 {
-    free(stream->_pbuff);
+	mempool_deallocate(mempool_getinstance(), stream->_pbuff, stream->_totalbufflen);
     stream->_pbuff = NULL;
     stream->_rtag = stream->_wtag = NULL;
     stream->_totalbufflen = 0;
@@ -89,45 +90,46 @@ bool input_stream_analyse_data(inputstream* stream)
 //查找消息头
 void input_stream_findhead(inputstream* stream)
 {
-    stream->_rtag ++;
-    unsigned char* p = stream->_rtag;
-    if ( p > stream->_pbuff + stream->_totalbufflen)
-    {
-        stream->_rtag = stream->_pbuff;
-        stream->_wtag = stream->_pbuff;
-        return;
-    }
+	unsigned char* start = stream->_rtag;
+	unsigned char* end = stream->_wtag;
+	size_t len = end - start;
+	const size_t headSize = sizeof(SProtocolHead);
 
-    int32_t len = stream->_wtag - stream->_rtag;
-    int32_t ipos = 0;
-    while ( ipos < len && ipos < stream->_totalbufflen)
-    {
-        //if (memcmp(readPos, "MES_", 4) == 0)  以字符串"MES_"为消息头
-        int flag;
-        memcpy(&flag, p, sizeof(int));
-        if ( flag == 9999)
-        {
-            stream->_rtag = p;
-            return;
-        }
-        p ++;
-        ipos++;
-        if ( p >= stream->_pbuff + stream->_totalbufflen)
-        {
-            break;
-        }
-    }
-    
-    if ( ipos < len)
-    {
-        memcpy( stream->_pbuff, stream->_rtag, stream->_wtag - stream->_wtag);
-        stream->_rtag = stream->_pbuff;
-    }
-    else
-    {
-        stream->_rtag = stream->_pbuff;
-        stream->_wtag = stream->_pbuff;
-    }
+	// 不足最小数据长度时重置缓冲区
+	if (len < 1) { // 只需要1字节就能开始查找
+		stream->_rtag = stream->_wtag = stream->_pbuff;
+		return;
+	}
+
+	// 在有效数据范围内查找消息头
+	for (unsigned char* p = start; p <= end - 1; p++)
+	{
+		// 关键修改：检查基础消息类型（忽略状态标志）
+		const byte_t baseType = *p & 0xFC;  // 保留高6位（1111 1100）
+
+		if (baseType == MESSAGE_TYPE_CDE ||
+			baseType == MESSAGE_TYPE_CROSS_DOMAIN)
+		{
+			stream->_rtag = p; // 找到可能的头位置
+			return;
+		}
+	}
+
+	// 未找到合法消息头：保留最后(headSize-1)字节
+	size_t keepLen = headSize - 1;
+	if (len > keepLen) {
+		// 保留最后 (headSize-1) 字节
+		unsigned char* keepPos = end - keepLen;
+		memmove(stream->_pbuff, keepPos, keepLen);
+		stream->_rtag = stream->_pbuff;
+		stream->_wtag = stream->_pbuff + keepLen;
+	}
+	else {
+		// 全部数据不足 headSize-1，全部保留
+		memmove(stream->_pbuff, start, len);
+		stream->_rtag = stream->_pbuff;
+		stream->_wtag = stream->_pbuff + len;
+	}
 }
 
 //写入数据
