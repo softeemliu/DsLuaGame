@@ -2,8 +2,10 @@
 #define __PROTOCOL_H__
 #include "public.h"
 
-#ifdef _MSC_VER
-#pragma pack(push, 1)
+#ifdef _WIN32
+#pragma pack(push,4)
+#else
+#pragma pack(4)
 #endif
 
 

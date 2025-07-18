@@ -14,6 +14,7 @@ typedef struct
 //定义netmsgblock结构体
 typedef struct
 {
+	byte_t _syscmd;
 	int _maxlen;
 	int _len;
 	char* _pbuff;
@@ -24,6 +25,9 @@ void netmsgblock_init(netmsgblock* msgblock, netinfo* ni);
 
 // 释放函数，替代析构函数 
 void netmsgblock_destroy(netmsgblock* block);
+
+//向数据块里面写入定时器数据
+void netmsgblock_writetimer(netmsgblock* block, const timertask* task);
 
 // 向数据块里写网络数据 
 void netmsgblock_writenetinfo(netmsgblock* block, const netinfo* ni);

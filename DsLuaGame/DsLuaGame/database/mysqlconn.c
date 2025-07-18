@@ -12,7 +12,6 @@ int init_connection_pool(const char* host, const char* user,
 		g_conn_pool = (ConnectionPool*)malloc(sizeof(ConnectionPool));
 		if (!g_conn_pool) return 0;
 
-		memset(g_conn_pool, 0, sizeof(ConnectionPool));
 		g_conn_pool->size = pool_size;
 		g_conn_pool->max_size = max_size;
 		g_conn_pool->timeout = timeout;

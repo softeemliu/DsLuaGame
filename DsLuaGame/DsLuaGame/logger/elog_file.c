@@ -157,7 +157,7 @@ __exit:
     /* reopen the file */
     
     fp = fopen(local_cfg.name, "a+");
-    printf("elog_file_rotate, name:%s  fp:%d\n", local_cfg.name, fp);
+    printf("elog_file_rotate, name:%s  fp:%p\n", local_cfg.name, fp);
     return result;
 }
 

@@ -21,9 +21,15 @@ void netmsgblock_destroy(netmsgblock* block)
     block->_maxlen = 0;
 }
 
+void netmsgblock_writetimer(netmsgblock* block, const timertask* task)
+{
+	block->_syscmd = 2;
+}
+
 // 向数据块里写网络数据 
 void netmsgblock_writenetinfo(netmsgblock* block, const netinfo* ni)
 {
+	block->_syscmd = 1;
 	int32_t ptrlen = sizeof(ni->_clsptr);
 	//前8个字节保存了网络handle的指针
 	memcpy(block->_pbuff, &(ni->_clsptr), ptrlen);

@@ -16,10 +16,10 @@ enum ESTaskType
 typedef struct{
 	sock_t sock;                // 套接字描述符
 	time_t last_active;       // 最后活动时间
+	timertask* timer_ev;
 	event_cb read_cb;   //读数据回调函数
 	event_cb write_cb;  //写数据回调函数
 	event_cb remove_cb;  //写数据回调函数
-	timertask* timer_ev;
 	inputstream _instream;
 } CSession;
 

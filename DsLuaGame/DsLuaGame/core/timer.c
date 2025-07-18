@@ -172,7 +172,8 @@ void* timer_thread_run(void* arg)
 			timermgr->tasks = node->next;
 
 			// 执行任务
-			if (node->task->func != NULL) {
+			if (node->task->func != NULL) 
+			{
 				node->task->func(node->task->arg);
 			}
 

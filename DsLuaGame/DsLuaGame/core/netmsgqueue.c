@@ -3,6 +3,7 @@
 #include "protocol.h"
 #include "core/network.h"
 #include "logger/elog.h"
+#include "mempool.h"
 
 static netmsgqueue* queue_inst = NULL;
 
@@ -59,7 +60,7 @@ void netmsgqueue_destory(netmsgqueue* que)
 void netmsgqueue_pushback(netmsgqueue* que, netmsgblock* data)
 {
     AUTO_LOCK(&que->_lock);
-    queuenode* node = (queuenode*)malloc(sizeof(queuenode));
+    queuenode* node = (queuenode*)mempool_allocate( mempool_getinstance(), sizeof(queuenode));
 	if ( node == NULL)
 	{
 		AUTO_UNLOCK(&que->_lock);
@@ -97,7 +98,7 @@ netmsgblock* netmsgqueue_gethead(netmsgqueue* que)
 		{
 			que->_tail = NULL;
 		}
-        free(node);
+		mempool_deallocate(mempool_getinstance(), node, sizeof(queuenode));
         que->_size--;
     }
     AUTO_UNLOCK(&que->_lock);
@@ -128,16 +129,30 @@ void* netmsgqueue_thread_run(void* arg)
         {
             continue;
         }
-        netinfo ni;
-        netmsgblock_getnetdata(block, &ni);
-		sock_t sock = ni._clsptr->sock;
-		//构造一个
-		bytestream* btstream = obtain_bytestream();
-		bytestream_append(btstream, ni._pbuf, ni._buflen);
-		//调用lua方法
-		lua_call_mg("onNetworkMsg", sock, btstream);
+		switch (block->_syscmd)
+		{
+			case 1:
+			{
+				netinfo ni;
+				netmsgblock_getnetdata(block, &ni);
+				sock_t sock = ni._clsptr->sock;
+				//构造一个
+				bytestream* btstream = obtain_bytestream();
+				bytestream_append(btstream, ni._pbuf, ni._buflen);
+				//调用lua方法
+				lua_call_mg("onNetworkMsg", sock, btstream);
 
-		giveup_bytestream(btstream);
+				giveup_bytestream(btstream);
+			}
+			break;
+			case 2:
+			{
+
+			}
+			break;
+			default:
+			break;
+		}
 		netmsgblock_deallocate(block);
     }
 }

@@ -47,7 +47,7 @@ void wait_stop()
 	do 
 	{
 		c = getchar();
-	} while (c < 0);
+	} while (c > 0);
 #endif
 }
 

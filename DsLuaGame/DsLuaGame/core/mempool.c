@@ -1,14 +1,15 @@
 #include "mempool.h"
 
 // 单例模式实现 
-static mempool* g_instance = NULL;
+static mempool* g_mempool_instance = NULL;
 
 mempool* mempool_getinstance() {
-    if (!g_instance) {
-        g_instance = (mempool*)malloc(sizeof(mempool));
-        mempool_init(g_instance);
-    }
-    return g_instance;
+	if (!g_mempool_instance)
+	{
+		g_mempool_instance = (mempool*)malloc(sizeof(mempool));
+		mempool_init(g_mempool_instance);
+	}
+	return g_mempool_instance;
 }
 
 // 初始化函数 

@@ -188,29 +188,44 @@ DWORD WINAPI network_thread_run(LPVOID arg)
 		if (ret > 0) {
 			// 处理活跃连接
 			for (int i = 0; i < (int)g_net_server->_fdsR[0].fd_count; i++) {
-				TreeNode* pNode = map_find(&_handleMap, (int)g_net_server->_fdsR[0].fd_array[i]);
-				if (NULL != pNode && ((CSession*)pNode->value)->read_cb)
+				sock_t tmpfd = g_net_server->_fdsR[0].fd_array[i];
+				TreeNode* pNode = map_find(&_handleMap, tmpfd);
+				if (!pNode) continue;
+
+				CSession* cls = (CSession*)pNode->value;
+				if (!cls) continue;
+
+				if (cls->read_cb)
 				{
-					((CSession*)pNode->value)->read_cb(pNode);
+					cls->read_cb(cls);
 				}
 			}
 
 			for (int i = 0; i < (int)g_net_server->_fdsW[0].fd_count; i++) {  //写数据
 				sock_t tmpfd = g_net_server->_fdsW[0].fd_array[i];
-				TreeNode* pNode = map_find(&_handleMap, (int)g_net_server->_fdsW[0].fd_array[i]);
-				if (pNode && ((CSession*)pNode->value)->write_cb)
+				TreeNode* pNode = map_find(&_handleMap, tmpfd);
+				if (!pNode) continue;
+
+				CSession* cls = (CSession*)pNode->value;
+				if (!cls) continue;
+				
+				if (cls->write_cb && 1 != cls->write_cb(cls) && cls->remove_cb)
 				{
-					if (1 != ((CSession*)pNode->value)->write_cb(pNode))
-					{
-						remove_socket(pNode);
-					}
+					cls->remove_cb(cls);
 				}
 			}
 
 			for (int i = 0; i < (int)g_net_server->_fdsE[0].fd_count; i++){  //异常数据
-				TreeNode* pNode = map_find(&_handleMap, (int)g_net_server->_fdsE[0].fd_array[i]);
-				if (pNode && ((CSession*)pNode->value)->remove_cb) {
-					((CSession*)pNode->value)->remove_cb(pNode);
+				sock_t tmpfd = g_net_server->_fdsE[0].fd_array[i];
+				TreeNode* pNode = map_find(&_handleMap, tmpfd);
+				if (!pNode) continue;
+
+				CSession* cls = (CSession*)pNode->value;
+				if (!cls) continue;
+
+				if (cls->remove_cb)
+				{
+					cls->remove_cb(cls);
 				}
 			}
 		}
@@ -252,10 +267,11 @@ void* network_thread_run(void* arg) {
 				TreeNode* pNode = map_find(&_handleMap, events[i].data.fd);
 				if (!pNode) continue;
 
-				CSession* cc = (CSession*)pNode->value;
-				if (cc && cc->read_cb)
+				CSession* cls = (CSession*)pNode->value;
+				if (!cls) continue;
+				if (cls->read_cb)
 				{
-					cc->read_cb(pNode);
+					cls->read_cb(cls);
 				}
 			}
 			if (revents & EPOLLOUT) //写数据
@@ -263,10 +279,11 @@ void* network_thread_run(void* arg) {
 				TreeNode* pNode = map_find(&_handleMap, events[i].data.fd);
 				if (!pNode) continue;
 
-				CSession* cc = (CSession*)pNode->value;
-				if (cc && cc->write_cb)
+				CSession* cls = (CSession*)pNode->value;
+				if (!cls) continue;
+				if (cls->write_cb && 1 != cls->write_cb(cls) && cls->remove_cb)
 				{
-					cc->write_cb(pNode);
+					cls->remove_cb(cls);
 				}
 			}
 			if ((revents & (EPOLLHUP | EPOLLERR)))  // 异常数据
@@ -274,10 +291,11 @@ void* network_thread_run(void* arg) {
 				TreeNode* pNode = map_find(&_handleMap, events[i].data.fd);
 				if (!pNode) continue;
 
-				CSession* cc = (CSession*)pNode->value;
-				if (cc && cc->remove_cb)
+				CSession* cls = (CSession*)pNode->value;
+				if (!cls) continue;
+				if (cls->remove_cb)
 				{
-					cc->remove_cb(pNode);
+					cls->remove_cb(cls);
 				}
 			}
 		}
@@ -553,10 +571,7 @@ void insert_handle(sock_t sock, CSession* cc)
 
 int accept_socket(void* arg)
 {
-	TreeNode* pNode = (TreeNode*)arg;
-	if (!pNode) return 0;
-
-	CSession* server_cc = (CSession*)pNode->value;
+	CSession* server_cc = (CSession*)arg;
 	sock_t server_sock = server_cc->sock;
 
 	while (1)
@@ -593,7 +608,6 @@ int accept_socket(void* arg)
 			if (client_cc)
 			{
 				insert_handle(new_fd, client_cc);
-
 				// 日志和回调
 				char ip_str[32] = { '\0' };
 				inet_ntop(AF_INET, &their_addr.sin_addr, ip_str, sizeof(ip_str));
@@ -619,10 +633,7 @@ int accept_socket(void* arg)
 
 int read_socket(void* arg)
 {
-	TreeNode* pNode = (TreeNode*)arg;
-	if (!pNode) return -1;
-
-	CSession* cc = (CSession*)pNode->value;
+	CSession* cc = (CSession*)arg;
 	if (!cc) return -2;
 
 	char buff[10 * 1024] = { 0 };
@@ -640,18 +651,17 @@ int read_socket(void* arg)
 			if (errno == EWOULDBLOCK || errno == EAGAIN || errno == EINTR) break;
 #endif
 			// 其他错误视为连接断开
-			remove_socket(pNode);
+			remove_socket(cc);
 			return -1;
 		}
 		else if (nRec == 0)
 		{
 			// 对端关闭连接
-			remove_socket(pNode);
+			remove_socket(cc);
 			return 0;
 		}
 		else
 		{
-			printf("recv data size: %d\n", nRec);
 			input_stream_write(&cc->_instream, buff, nRec);
 			input_stream_analyse_data(&cc->_instream);
 			total_read += nRec;
@@ -667,10 +677,7 @@ int read_socket(void* arg)
 
 int write_socket(void* arg)
 {
-	TreeNode* pNode = (TreeNode*)arg;
-	if (!pNode) return -1;
-
-	CSession* cc = (CSession*)pNode->value;
+	CSession* cc = (CSession*)arg;
 	if (!cc) return -2;
 	//调用lua回调函数，通知发送数据成功
 	//如果发送失败，则通知lua, 按照实际需求处理失败的情况
@@ -679,12 +686,7 @@ int write_socket(void* arg)
 
 int remove_socket(void* arg)
 {
-	TreeNode* pNode = (TreeNode*)arg;
-	if (NULL == pNode)
-	{
-		return -1;
-	}
-	CSession* cc = (CSession*)pNode->value;
+	CSession* cc = (CSession*)arg;
 	if (cc == NULL)
 	{
 		return -2;

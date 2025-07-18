@@ -7,8 +7,6 @@
 #include "utils/datetime.h"
 #include "utils/rbtree.h"
 
-extern CMap _handleMap;
-
 CSession* create_session(sock_t sock, event_cb rcb, event_cb wcb, event_cb ecb)
 {
 	CSession* session = (CSession*)mempool_allocate(mempool_getinstance(), sizeof(CSession));
@@ -17,15 +15,15 @@ CSession* create_session(sock_t sock, event_cb rcb, event_cb wcb, event_cb ecb)
 		log_e("memory allocation failed for session");
 		return NULL;
 	}
-	memset(session, 0, sizeof(CSession));
 	session->sock = sock;
 	session->last_active = time(NULL);
+	session->timer_ev = NULL;
 	session->read_cb = rcb;
 	session->write_cb = wcb;
 	session->remove_cb = ecb;
-	session->timer_ev = NULL;
 
 	input_stream_inithandle(&session->_instream, session);
+
 	return session;
 }
 
@@ -51,14 +49,13 @@ void session_firstpack_callback(void* arg)
 		return;
 	}
 
-	TreeNode* node = map_find(&_handleMap, session->sock);
-	if (node && session->remove_cb)
+	if (session->remove_cb)
 	{
 		char buf[128] = { 0 };
 		sprintf(buf, "session_firstpack_timer_callback, sock:%d", session->sock);
 		log_e(buf);
 
-		session->remove_cb(node);
+		session->remove_cb(session);
 	}
 }
 
@@ -90,31 +87,31 @@ void session_addtimer(CSession* ss, int type)
 	interval val;
 	interval_create_milliseconds(&val, 10 * 1000);
 	datetime_add_interval(&dt, &val);
-	switch (type) 
+	switch (type)
 	{
-		case ESTaskTypeFirstPack:
-		{
-			task->arg = session;
-			task->func = session_firstpack_callback;
-			timer_schedule(task, dt, interval_zero);
-			ss->timer_ev = task;
-		}
-		break;
-		case ESTaskTypeKeepAlive:
-		{
-			task->arg = session;
-			task->func = session_keepalive_callback;
-			timer_schedule(task, dt, val);  // 重复定时器
-			ss->timer_ev = task;
-		}
-		break;
-		default:	
-		{
-			char buf[128] = { 0 };
-			sprintf(buf, "session_addtimer,type is not define, sock:%d", session->sock);
-			log_e(buf);
-			mempool_deallocate(mempool_getinstance(), task, sizeof(timertask));
-		}
+	case ESTaskTypeFirstPack:
+	{
+		task->arg = session;
+		task->func = session_firstpack_callback;
+		timer_schedule(task, dt, interval_zero);
+		ss->timer_ev = task;
+	}
+	break;
+	case ESTaskTypeKeepAlive:
+	{
+		task->arg = session;
+		task->func = session_keepalive_callback;
+		timer_schedule(task, dt, val);  // 重复定时器
+		ss->timer_ev = task;
+	}
+	break;
+	default:
+	{
+		char buf[128] = { 0 };
+		sprintf(buf, "session_addtimer,type is not define, sock:%d", session->sock);
+		log_e(buf);
+		mempool_deallocate(mempool_getinstance(), task, sizeof(timertask));
+	}
 	}
 }
 
